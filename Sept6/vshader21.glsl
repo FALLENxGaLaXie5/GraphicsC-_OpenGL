@@ -20,7 +20,7 @@ in vec4    vColor;             // per-vertex color
 out vec4 color;
 
 //---- uniforms
-
+uniform mat4 model;
 
 //===========================================================================
 // vshader main
@@ -28,16 +28,30 @@ out vec4 color;
 void
 main()
 {
+    float rotateOnX = 0.7;
+    float rotateOnY = 0.0;
+    float rotateOnZ = 0.7;
+    
+    
+    
     //---- transform the vertex
-    float c = cos(0.2);
-    float nc = -(cos(0.2));
-    float s = sin(0.2);
-    float ns = -(sin(0.2));
+    float cX = cos(rotateOnX);
+    float sX = sin(rotateOnX);
+    
+    ////
+    
+    float cY = cos(rotateOnY);
+    float sY = sin(rotateOnY);
+    
+    ////
+    
+    float cZ = cos(rotateOnZ);
+    float sZ = sin(rotateOnZ);
     
     
     mat4 rx = mat4(1.0, 0.0, 0.0, 0.0,
-                   0.0, c, -s, 0.0,
-                   0.0, s, c, 0.0,
+                   0.0, cX, -sX, 0.0,
+                   0.0, sX, cX, 0.0,
                    0.0, 0.0, 0.0, 1.0);
     
     
@@ -50,13 +64,21 @@ main()
                    0.0, 0.0, 0.0, 1.0);
     
      */
-    mat4 ry = mat4(c, 0.0, s, 0.0,
+    mat4 ry = mat4(cY, 0.0, sY, 0.0,
                    0.0, 1.0, 0.0, 0.0,
-                   ns, 0.0, c, 0.0,
+                   -sY, 0.0, cY, 0.0,
                    0.0, 0.0, 0.0, 1.0);
     
     
-    gl_Position = vPosition * rx * ry;
+    
+    mat4 rz = mat4(cZ, -sZ, 0.0, 0.0,
+                   sZ, cZ, 0.0, 0.0,
+                   0.0, 0.0, 1.0, 0.0,
+                   0.0, 0.0, 0.0, 1.0);
+    
+    //gl_Position = vPosition * rz;// * ry * rz;
+    
+    gl_Position = model * vPosition;
     
     color = vColor;
 }

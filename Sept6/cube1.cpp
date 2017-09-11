@@ -161,12 +161,27 @@ init()
 }
 
 //----------------------------------------------------------------------------
+float angle_z = 20.0;
+float angle_y = 40.0;
+float angle_x = 50.0;
+
+float translate_x = 10;
+float translate_y = 10;
+float translate_z = 10;
 
 void
 display( void )
 {
     glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
     
+    mat4 transformTranslate = Translate(translate_x, translate_y, translate_z);
+    mat4 transformAngle = RotateX( angle_x ) * RotateY( angle_y ) * RotateZ( angle_z );
+    //mat4 transformScale = Scale(, <#const GLfloat y#>, <#const GLfloat z#>);
+
+    //always TRANSFORM * ROTATE * SCALE
+    
+    
+    glUniformMatrix4fv( glGetUniformLocation( program, "model"), 1, GL_TRUE, transformAngle);
     glDrawArrays( GL_TRIANGLES, 0, NumVertices );
     
     glutSwapBuffers();
@@ -187,6 +202,15 @@ keyboard( unsigned char key, int x, int y )
 
 
 //----------------------------------------------------------------------------
+void
+idle( void )
+{
+    angle_x = fmod(angle_x + 7, 360.0);
+    angle_y = fmod(angle_y + 10, 360.0);
+    angle_z = fmod(angle_z + 5, 360.0);
+    glutPostRedisplay();
+}
+
 
 void
 reshape( int w, int h )
@@ -209,6 +233,8 @@ main( int argc, char **argv )
     glutDisplayFunc( display );
     glutReshapeFunc( reshape );
     glutKeyboardFunc( keyboard );
+    
+    glutIdleFunc( idle );
     
     glutMainLoop();
     return 0;
