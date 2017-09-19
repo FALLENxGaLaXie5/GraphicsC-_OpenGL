@@ -26,10 +26,11 @@ GLfloat  Theta2[NumAxes] = { 0.0, 0.0, 0.0 };
 
 GLfloat TranslateCube[NumAxes] = {-0.8,0.8,0.0};
 GLfloat TranslateCyl[NumAxes] = {0.0,0.0,0.0};
+GLfloat TranslateSphere[NumAxes] = {0.8,0.5,0.0};
 
 size_t CUBE_OFFSET;
 size_t CYLINDER_OFFSET;
-
+size_t SPHERE_OFFSET;
 
 //----------------------------------------------------------------------------
 
@@ -47,6 +48,7 @@ init()
     //---------------------------------------------------------------------
     colorcube();
     colortube();
+    colorsphere();
     //---------------------------------------------------------------------
 
     
@@ -54,7 +56,10 @@ init()
     
     CUBE_OFFSET = 0;
     CYLINDER_OFFSET = sizeof(points_cube) + sizeof(colors);
-
+    //SPHERE_OFFSET = CYLINDER_OFFSET + sizeof(points_cylinder);
+    SPHERE_OFFSET = sizeof(points_cube) + sizeof(colors);
+    
+    
     // Create a vertex array object
     GLuint vao;
     glGenVertexArrays( 1, &vao );  // removed 'APPLE' suffix for 3.2
@@ -64,11 +69,21 @@ init()
     GLuint buffer;
     glGenBuffers( 1, &buffer );
     glBindBuffer( GL_ARRAY_BUFFER, buffer );
-    glBufferData( GL_ARRAY_BUFFER, sizeof(points_cube) + sizeof(colors) + sizeof(points_cylinder), NULL, GL_STATIC_DRAW );
+    
+    /**
+    glBufferData( GL_ARRAY_BUFFER, sizeof(points_cube) + sizeof(colors) + sizeof(points_cylinder) + sizeof(points_sphere), NULL, GL_STATIC_DRAW );
     glBufferSubData( GL_ARRAY_BUFFER, CUBE_OFFSET, sizeof(points_cube), points_cube );
     glBufferSubData( GL_ARRAY_BUFFER, sizeof(points_cube), sizeof(colors), colors );
     glBufferSubData( GL_ARRAY_BUFFER, CYLINDER_OFFSET, sizeof(points_cylinder), points_cylinder );
+    glBufferSubData( GL_ARRAY_BUFFER, SPHERE_OFFSET, sizeof(points_sphere), points_sphere );
+     */
     
+    
+    glBufferData( GL_ARRAY_BUFFER, sizeof(points_cube) + sizeof(colors) + sizeof(points_cylinder) + sizeof(points_sphere), NULL, GL_STATIC_DRAW );
+    glBufferSubData( GL_ARRAY_BUFFER, CUBE_OFFSET, sizeof(points_cube), points_cube );
+    glBufferSubData( GL_ARRAY_BUFFER, sizeof(points_cube), sizeof(colors), colors );
+    glBufferSubData( GL_ARRAY_BUFFER, SPHERE_OFFSET, sizeof(points_sphere), points_sphere );
+
     //---------------------------------------------------------------------
     
     // set up vertex arrays
@@ -95,8 +110,10 @@ display( void )
 {
     glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
     
-    //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     
+    /**
+    //FOR CYLINDER
     mat4  rot1 = ( RotateX( Theta1[Xaxis] ) * RotateY( Theta1[Yaxis] ) * RotateZ( Theta1[Zaxis] ) );
     mat4 transform = Translate( 0.5, 0.0, 0.0 ) * rot1 * Scale(0.25, 1.0, 0.25);
     
@@ -108,10 +125,13 @@ display( void )
     glUniform4fv( glGetUniformLocation(program, "obj_color"), 1, vec4(0.8, 0.0, 0.0, 1.0) );
     
     glDrawArrays( GL_TRIANGLES, 0, NumVerticesCylinder );
+    */
+    
+    //FOR CUBE
     
     
     mat4  rot2 = ( RotateX( Theta2[Xaxis] ) * RotateY( Theta2[Yaxis] ) * RotateZ( Theta2[Zaxis] ) );
-    transform = Translate( TranslateCube[Xaxis], TranslateCube[Yaxis], TranslateCube[Zaxis] ) * rot2 * Scale(0.25, 1.0, 0.25);
+    mat4 transform = Translate( TranslateCube[Xaxis], TranslateCube[Yaxis], TranslateCube[Zaxis] ) * rot2 * Scale(0.25, 1.0, 0.25);
     
     glUniformMatrix4fv( glGetUniformLocation( program, "model" ), 1, GL_TRUE, transform );
     
@@ -122,6 +142,23 @@ display( void )
     glDrawArrays( GL_TRIANGLES, 0, NumVerticesCube );
     
     glutSwapBuffers();
+    
+    
+    
+    //FOR SPHERE
+    mat4  rot3 = ( RotateX( Theta2[Xaxis] ) * RotateY( Theta2[Yaxis] ) * RotateZ( Theta2[Zaxis] ) );
+    transform = Translate( TranslateSphere[Xaxis], TranslateSphere[Yaxis], TranslateSphere[Zaxis] ) * rot3 * Scale(0.25, 1.0, 0.25);
+    
+    glUniformMatrix4fv( glGetUniformLocation( program, "model" ), 1, GL_TRUE, transform );
+    
+    glVertexAttribPointer( vPosition, 4, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(SPHERE_OFFSET) );
+    
+    glUniform1i( glGetUniformLocation(program, "obj_color_on"), false );
+    
+    glDrawArrays( GL_TRIANGLES, 0, NumVerticesSphere );
+    
+    glutSwapBuffers();
+    
 }
 
 //----------------------------------------------------------------------------

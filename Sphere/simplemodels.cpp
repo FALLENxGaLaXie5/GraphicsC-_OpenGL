@@ -74,6 +74,17 @@ colorcube()
 vec4 points_cylinder[NumVerticesCylinder];
 vec4 vertices_cylinder[4];
 
+
+//sphere model
+//----------------------------------------------
+vec4 points_sphere[NumVerticesSphere];
+vec4 vertices_sphere[4];
+
+
+
+
+
+
 // quad generates two triangles for each face and assigns colors to the vertices
 void
 quad_cylinder( int a, int b, int c, int d )
@@ -92,13 +103,29 @@ quad_cylinder( int a, int b, int c, int d )
     Index++;
 }
 
+void
+quad_sphere( int a, int b, int c, int d )
+{
+    points_sphere[Index] = vertices_sphere[a];
+    Index++;
+    points_sphere[Index] = vertices_sphere[b];
+    Index++;
+    points_sphere[Index] = vertices_sphere[c];
+    Index++;
+    points_sphere[Index] = vertices_sphere[a];
+    Index++;
+    points_sphere[Index] = vertices_sphere[c];
+    Index++;
+    points_sphere[Index] = vertices_sphere[d];
+    Index++;
+}
 
 float const bottom = -0.5;
 float const top    = 0.5;
 
 
 void
-colortube(void)
+colorsphere(void)
 {
     /**
     float r = 0.5;
@@ -126,48 +153,46 @@ colortube(void)
         Index++;
     }
     */
-    for (int p = 0; p < segments; p++)
+    for (int p = 0; p < sphericalLevels; p++)
     {
         int num;
-        float r = 0.5;
+        float x = 0.0, y = 0.0, r = 0.5;
         
         GLfloat const p0 = M_PI/2 - p * (float)p / (float)segments;
         GLfloat const p1 = M_PI/2 - p * (float)(p+1) / (float)segments;
         for ( int n = 0; n < segments; n++ )
         {
+            //r = r * sin(p0);
             num = 0;
-            //float x = 0.0, y = 0.0, r = 0.5;
-            
+            //ry = r * cos(p0);
             GLfloat const t0 = 2 * M_PI * (float)n / (float)segments;
             GLfloat const t1 = 2 * M_PI * (float)(n+1) / (float)segments;
-            r = (r * sin(p0)) * cos(t0);
             //quad vertex 0
-            vertices_cylinder[num].x = cos(t0) * r;
-            vertices_cylinder[num].y = bottom;
-            vertices_cylinder[num].z = sin(t0) * r;
-            vertices_cylinder[num++].w = 1.0;
+            vertices_sphere[num].x = (r * sin(p0))  * cos(t0);
+            vertices_sphere[num].y = (r * cos(p0)) + bottom;
+            vertices_sphere[num].z = (r * sin(p0)) * sin(t0);
+            vertices_sphere[num++].w = 1.0;
             //quad vertex 1
-            vertices_cylinder[num].x = cos(t1) * r;
-            vertices_cylinder[num].y = bottom;
-            vertices_cylinder[num].z = sin(t1) * r;
-            vertices_cylinder[num++].w = 1.0;
+            vertices_sphere[num].x = (r * sin(p1))  * cos(t1);
+            vertices_sphere[num].y = (r * cos(p1)) + bottom;
+            vertices_sphere[num].z = (r * sin(p1)) * sin(t1);
+            vertices_sphere[num++].w = 1.0;
             //quad vertex 2
-            vertices_cylinder[num].x = cos(t1) * r;
-            vertices_cylinder[num].y = top;
-            vertices_cylinder[num].z = sin(t1) * r;
-            vertices_cylinder[num++].w = 1.0;
+            vertices_sphere[num].x = (r * sin(p0))  * cos(t0);
+            vertices_sphere[num].y = (r * cos(p0)) + top;
+            vertices_sphere[num].z = (r * sin(p0)) * sin(t0);
+            vertices_sphere[num++].w = 1.0;
             //quad vertex 3
-            vertices_cylinder[num].x = cos(t0) * r;
-            vertices_cylinder[num].y = top;
-            vertices_cylinder[num].z = sin(t0) * r;
-            vertices_cylinder[num++].w = 1.0;
+            vertices_sphere[num].x = (r * sin(p1))  * cos(t1);
+            vertices_sphere[num].y = (r * cos(p1)) + top;
+            vertices_sphere[num].z = (r * sin(p1)) * sin(t1);
+            vertices_sphere[num++].w = 1.0;
             
             quad_cylinder( 0, 1, 2, 3 );
         }
     }
     
  /*
-    
     for ( int n = 0; n < segments; n++ )
     {
         GLfloat const t0 = 2 * M_PI * (float)n / (float)segments;
@@ -189,10 +214,10 @@ colortube(void)
         points_cylinder[Index].w = 1.0;
         Index++;
     }
-    */
+  */
 }
 
-/*
+
 void
 colortube(void)
 {
@@ -277,6 +302,6 @@ colortube(void)
         points_cylinder[Index].w = 1.0;
         Index++;
     }
-    
+ 
 }
-*/
+ 

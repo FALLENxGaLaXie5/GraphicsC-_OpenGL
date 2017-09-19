@@ -11,8 +11,15 @@ void colorcube();
 //----------------------------------------------------------------------------
 
 const int segments = 8;
+
 const int NumVerticesCylinder = segments*6 + segments*3*2;
 
+const int sphericalLevels = 20;
+
+const int NumVerticesSphere = (segments * 6 + segments*3*3) * sphericalLevels;
+
 extern vec4 points_cylinder[NumVerticesCylinder];
+extern vec4 points_sphere[NumVerticesSphere];
 
 void colortube();
+void colorsphere();
