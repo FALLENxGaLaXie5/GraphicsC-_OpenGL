@@ -69,10 +69,121 @@ colorcube()
 
 
 
-//---- cylinder model
-//----------------------------------------------------------------------------
-vec4 points_cylinder[NumVerticesCylinder];
-vec4 vertices_cylinder[4];
+
+
+
+
+
+//sphere model
+//----------------------------------------------
+vec4 points_torus[NumVerticesTorus];
+vec4 vertices_torus[4];
+
+
+
+
+void
+quad_torus( int a, int b, int c, int d )
+{
+    points_torus[Index] = vertices_torus[a];
+    Index++;
+    points_torus[Index] = vertices_torus[b];
+    Index++;
+    points_torus[Index] = vertices_torus[c];
+    Index++;
+    points_torus[Index] = vertices_torus[a];
+    Index++;
+    points_torus[Index] = vertices_torus[c];
+    Index++;
+    points_torus[Index] = vertices_torus[d];
+    Index++;
+}
+
+
+
+
+void
+colorTorus(void)
+{
+    float r = 0.25;
+    float rd = 0.5;
+    Index = 0;
+    float x,y;
+    for (int p = 0; p < torusLevels; p++)
+    {
+        int num;
+        
+        
+        GLfloat const p0 = 2 * M_PI * (float)p / (float)torusLevels;
+        GLfloat const p1 = M_PI * (float)(p+1) / (float)torusLevels;
+        for ( int n = 0; n < torusLevels; n++ )
+        {
+            //r = r * sin(p0);
+            num = 0;
+            //ry = r * cos(p0);
+            GLfloat const t0 = 2 * M_PI * (float)n / (float)torusLevels;
+            GLfloat const t1 = 2 * M_PI * (float)(n+1) / (float)torusLevels;
+            //quad vertex 0
+            
+            x = cos(t0) * r + rd;
+            y = 0.0;
+            
+            
+            vertices_torus[num].z = sinf(t0) * r;
+            vertices_torus[num].x = x*cos(p1) - y*sin(p1);
+            vertices_torus[num].y = x*sin(p1) + y*cos(p1);
+            vertices_torus[num++].w = 1.0;
+            
+            
+            
+            
+            //quad vertex 1
+            
+            x = cos(t1) * r + rd;
+            y = 0.0;
+            
+            vertices_torus[num].z = r * sin(t1);
+            vertices_torus[num].x = x*cos(p1) - y*sin(p1);
+            vertices_torus[num].y = x*sin(p1) + y*cos(p1);
+            vertices_torus[num++].w = 1.0;
+            
+            
+            
+            
+            //quad vertex 2
+            x = cos(t1) * r + rd;
+            y = 0.0;
+            
+            
+            
+            vertices_torus[num].z = sin(t1) * r;
+            vertices_torus[num].x = x*cos(p0) - y*sin(p0);
+            vertices_torus[num].y = x*sin(p0) + y*cos(p0);
+            vertices_torus[num++].w = 1.0;
+            
+            
+            //quad vertex 3
+            
+            x = cos(t0) * r + rd;
+            y = 0.0;
+            
+            
+            vertices_torus[num].z = sin(t0) * r;
+            vertices_torus[num].x = x*cos(p0) - y*sin(p0);
+            vertices_torus[num].y = x*sin(p0) + y*cos(p0);
+            vertices_torus[num++].w = 1.0;
+            
+            quad_torus( 0, 1, 2, 3 );
+        }
+    }
+}
+
+
+
+
+
+
+
 
 
 //sphere model
@@ -82,26 +193,6 @@ vec4 vertices_sphere[4];
 
 
 
-
-
-
-// quad generates two triangles for each face and assigns colors to the vertices
-void
-quad_cylinder( int a, int b, int c, int d )
-{
-    points_cylinder[Index] = vertices_cylinder[a];
-    Index++;
-    points_cylinder[Index] = vertices_cylinder[b];
-    Index++;
-    points_cylinder[Index] = vertices_cylinder[c];
-    Index++;
-    points_cylinder[Index] = vertices_cylinder[a];
-    Index++;
-    points_cylinder[Index] = vertices_cylinder[c];
-    Index++;
-    points_cylinder[Index] = vertices_cylinder[d];
-    Index++;
-}
 
 void
 quad_sphere( int a, int b, int c, int d )
@@ -120,101 +211,79 @@ quad_sphere( int a, int b, int c, int d )
     Index++;
 }
 
-float const bottom = -0.5;
-float const top    = 0.5;
+
 
 
 void
 colorsphere(void)
 {
-    /**
-    float r = 0.5;
     Index = 0;
-    //r = (r * sin(t))
-    for ( int n = 0; n < segments; n++ )
-    {
-        GLfloat const t0 = 2 * M_PI * (float)n / (float)segments;
-        GLfloat const t1 = 2 * M_PI * (float)(n+1) / (float)segments;
-        
-        points_cylinder[Index].x = 0.0;
-        points_cylinder[Index].y = top;
-        points_cylinder[Index].z = 0.0;
-        points_cylinder[Index].w = 1.0;
-        Index++;
-        points_cylinder[Index].x = cos(t0) * r;
-        points_cylinder[Index].y = top;
-        points_cylinder[Index].z = sin(t0) * r;
-        points_cylinder[Index].w = 1.0;
-        Index++;
-        points_cylinder[Index].x = cos(t1) * r;
-        points_cylinder[Index].y = top;
-        points_cylinder[Index].z = sin(t1) * r;
-        points_cylinder[Index].w = 1.0;
-        Index++;
-    }
-    */
     for (int p = 0; p < sphericalLevels; p++)
     {
         int num;
-        float x = 0.0, y = 0.0, r = 0.5;
+        float r = 0.5;
         
-        GLfloat const p0 = M_PI/2 - p * (float)p / (float)segments;
-        GLfloat const p1 = M_PI/2 - p * (float)(p+1) / (float)segments;
-        for ( int n = 0; n < segments; n++ )
+        GLfloat const p0 = M_PI * (float)p / (float)sphericalLevels;
+        GLfloat const p1 = M_PI * (float)(p+1) / (float)sphericalLevels;
+        for ( int n = 0; n < sphericalLevels; n++ )
         {
             //r = r * sin(p0);
             num = 0;
             //ry = r * cos(p0);
-            GLfloat const t0 = 2 * M_PI * (float)n / (float)segments;
-            GLfloat const t1 = 2 * M_PI * (float)(n+1) / (float)segments;
+            GLfloat const t0 = 2 * M_PI * (float)n / (float)sphericalLevels;
+            GLfloat const t1 = 2 * M_PI * (float)(n+1) / (float)sphericalLevels;
             //quad vertex 0
-            vertices_sphere[num].x = (r * sin(p0))  * cos(t0);
-            vertices_sphere[num].y = (r * cos(p0)) + bottom;
-            vertices_sphere[num].z = (r * sin(p0)) * sin(t0);
+            vertices_sphere[num].x = (r * sin(p1))  * cos(t0);
+            vertices_sphere[num].y = (r * cos(p1));
+            vertices_sphere[num].z = (r * sin(p1)) * sin(t0);
             vertices_sphere[num++].w = 1.0;
             //quad vertex 1
             vertices_sphere[num].x = (r * sin(p1))  * cos(t1);
-            vertices_sphere[num].y = (r * cos(p1)) + bottom;
+            vertices_sphere[num].y = (r * cos(p1));
             vertices_sphere[num].z = (r * sin(p1)) * sin(t1);
             vertices_sphere[num++].w = 1.0;
             //quad vertex 2
-            vertices_sphere[num].x = (r * sin(p0))  * cos(t0);
-            vertices_sphere[num].y = (r * cos(p0)) + top;
-            vertices_sphere[num].z = (r * sin(p0)) * sin(t0);
+            vertices_sphere[num].x = (r * sin(p0))  * cos(t1);
+            vertices_sphere[num].y = (r * cos(p0));
+            vertices_sphere[num].z = (r * sin(p0)) * sin(t1);
             vertices_sphere[num++].w = 1.0;
             //quad vertex 3
-            vertices_sphere[num].x = (r * sin(p1))  * cos(t1);
-            vertices_sphere[num].y = (r * cos(p1)) + top;
-            vertices_sphere[num].z = (r * sin(p1)) * sin(t1);
+            vertices_sphere[num].x = (r * sin(p0))  * cos(t0);
+            vertices_sphere[num].y = (r * cos(p0));
+            vertices_sphere[num].z = (r * sin(p0)) * sin(t0);
             vertices_sphere[num++].w = 1.0;
             
-            quad_cylinder( 0, 1, 2, 3 );
+            quad_sphere( 0, 1, 2, 3 );
         }
     }
-    
- /*
-    for ( int n = 0; n < segments; n++ )
-    {
-        GLfloat const t0 = 2 * M_PI * (float)n / (float)segments;
-        GLfloat const t1 = 2 * M_PI * (float)(n+1) / (float)segments;
-        
-        points_cylinder[Index].x = 0.0;
-        points_cylinder[Index].y = bottom;
-        points_cylinder[Index].z = 0.0;
-        points_cylinder[Index].w = 1.0;
-        Index++;
-        points_cylinder[Index].x = cos(t1) * r;
-        points_cylinder[Index].y = bottom;
-        points_cylinder[Index].z = sin(t1) * r;
-        points_cylinder[Index].w = 1.0;
-        Index++;
-        points_cylinder[Index].x = cos(t0) * r;
-        points_cylinder[Index].y = bottom;
-        points_cylinder[Index].z = sin(t0) * r;
-        points_cylinder[Index].w = 1.0;
-        Index++;
-    }
-  */
+}
+
+
+//---- cylinder model
+//----------------------------------------------------------------------------
+vec4 points_cylinder[NumVerticesCylinder];
+vec4 vertices_cylinder[4];
+
+
+float const bottom = -0.5;
+float const top    = 0.5;
+
+// quad generates two triangles for each face and assigns colors to the vertices
+void
+quad_cylinder( int a, int b, int c, int d )
+{
+    points_cylinder[Index] = vertices_cylinder[a];
+    Index++;
+    points_cylinder[Index] = vertices_cylinder[b];
+    Index++;
+    points_cylinder[Index] = vertices_cylinder[c];
+    Index++;
+    points_cylinder[Index] = vertices_cylinder[a];
+    Index++;
+    points_cylinder[Index] = vertices_cylinder[c];
+    Index++;
+    points_cylinder[Index] = vertices_cylinder[d];
+    Index++;
 }
 
 

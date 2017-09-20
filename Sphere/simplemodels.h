@@ -10,16 +10,22 @@ void colorcube();
 
 //----------------------------------------------------------------------------
 
-const int segments = 8;
+const int segments = 16;
 
 const int NumVerticesCylinder = segments*6 + segments*3*2;
 
-const int sphericalLevels = 20;
+const int sphericalLevels = 100;
+const int NumVerticesSphere = sphericalLevels * 6 * (sphericalLevels);// + sphericalLevels * 3 * 2;
 
-const int NumVerticesSphere = (segments * 6 + segments*3*3) * sphericalLevels;
+
+const int torusLevels = 20;
+const int NumVerticesTorus = torusLevels * 6 * (torusLevels);
+
 
 extern vec4 points_cylinder[NumVerticesCylinder];
 extern vec4 points_sphere[NumVerticesSphere];
+extern vec4 points_torus[NumVerticesTorus];
 
 void colortube();
 void colorsphere();
+void colorTorus();
