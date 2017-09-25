@@ -18,8 +18,8 @@ const int sphericalLevels = 100;
 const int NumVerticesSphere = sphericalLevels * 6 * (sphericalLevels);// + sphericalLevels * 3 * 2;
 
 
-const int torusLevels = 20;
-const int NumVerticesTorus = torusLevels * 6 * (torusLevels);
+const int torusLevels = 32;
+const int NumVerticesTorus = torusLevels * 6 * torusLevels;
 
 
 extern vec4 points_cylinder[NumVerticesCylinder];

@@ -31,6 +31,7 @@ GLfloat TranslateCyl[NumAxes] = {0.0,0.0,0.0};
 GLfloat TranslateSphere[NumAxes] = {-0.7,-0.7,0.0};
 GLfloat TranslateTorus[NumAxes] = {0.0,0.0,0.0};
 
+size_t COLOR_OFFSET;
 size_t CUBE_OFFSET;
 size_t CYLINDER_OFFSET;
 size_t SPHERE_OFFSET;
@@ -40,6 +41,7 @@ size_t TORUS_OFFSET;
 
 GLuint program;
 GLuint vPosition;
+GLuint vNormal;
 GLuint vColor;
 
 void
@@ -57,7 +59,8 @@ init()
     //---------------------------------------------------------------------
 
     CUBE_OFFSET = 0;
-    CYLINDER_OFFSET = sizeof(points_cube) + sizeof(colors);
+    COLOR_OFFSET = sizeof(points_cube);
+    CYLINDER_OFFSET = COLOR_OFFSET + sizeof(colors);
     SPHERE_OFFSET = CYLINDER_OFFSET + sizeof(points_cylinder);
     TORUS_OFFSET = SPHERE_OFFSET + sizeof(points_sphere);
     
@@ -67,6 +70,7 @@ init()
     glBindVertexArray( vao );
     
     // Create and initialize a buffer object
+    /**
     GLuint buffer;
     glGenBuffers( 1, &buffer );
     glBindBuffer( GL_ARRAY_BUFFER, buffer );
@@ -75,9 +79,24 @@ init()
     glBufferSubData( GL_ARRAY_BUFFER, sizeof(points_cube), sizeof(colors), colors );
     glBufferSubData( GL_ARRAY_BUFFER, CYLINDER_OFFSET, sizeof(points_cylinder), points_cylinder );
     glBufferSubData( GL_ARRAY_BUFFER, SPHERE_OFFSET, sizeof(points_sphere), points_sphere );
+    glBufferSubData( GL_ARRAY_BUFFER, TORUS_OFFSET, sizeof(TORUS_OFFSET), points_torus );
+     */
     //---------------------------------------------------------------------
     
+    
+    GLuint buffer;
+    glGenBuffers( 1, &buffer );
+    glBindBuffer( GL_ARRAY_BUFFER, buffer );
+    glBufferData( GL_ARRAY_BUFFER, sizeof(points_cube) + sizeof(colors) + sizeof(points_cylinder) + sizeof(points_sphere) + sizeof(points_torus), NULL, GL_STATIC_DRAW );
+    glBufferSubData( GL_ARRAY_BUFFER, CUBE_OFFSET, sizeof(points_cube), points_cube );
+    glBufferSubData( GL_ARRAY_BUFFER, COLOR_OFFSET, sizeof(colors), colors );
+    glBufferSubData( GL_ARRAY_BUFFER, CYLINDER_OFFSET, sizeof(points_cylinder), points_cylinder );
+    glBufferSubData( GL_ARRAY_BUFFER, SPHERE_OFFSET, sizeof(points_sphere), points_sphere );
+    glBufferSubData( GL_ARRAY_BUFFER, TORUS_OFFSET, sizeof(points_torus), points_torus );
+    
+    
     // set up vertex arrays
+    
     vPosition = glGetAttribLocation( program, "vPosition" );
     glEnableVertexAttribArray( vPosition );
     glVertexAttribPointer( vPosition, 4, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(0) );
@@ -85,7 +104,23 @@ init()
     vColor = glGetAttribLocation( program, "vColor" );
     glEnableVertexAttribArray( vColor );
     glVertexAttribPointer( vColor, 4, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(sizeof(points_cube)) );
+     
     //---------------------------------------------------------------------
+    /**
+    // set up vertex arrays
+    vPosition = glGetAttribLocation( program, "vPosition" );
+    glEnableVertexAttribArray( vPosition );
+    glVertexAttribPointer( vPosition, 4, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(CUBE_OFFSET) );
+    
+    vNormal = glGetAttribLocation( program, "vNormal" );
+    glEnableVertexAttribArray( vNormal );
+    glVertexAttribPointer( vNormal, 3, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(CUBE_NORMALS_OFFSET) );
+    
+    vColor = glGetAttribLocation( program, "vColor" );
+    glEnableVertexAttribArray( vColor );
+    glVertexAttribPointer( vColor, 4, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(COLOR_OFFSET) );
+    //---------------------------------------------------------------------
+    */
     
     glEnable( GL_DEPTH_TEST );
     glClearColor( 1.0, 1.0, 1.0, 1.0 );
@@ -204,7 +239,7 @@ display( void )
     //FOR TORUS
     
     mat4 rot4 = ( RotateX( ThetaTorus[Xaxis] ) * RotateY( ThetaTorus[Yaxis] ) * RotateZ( ThetaTorus[Zaxis] ) );
-    transform = Translate( TranslateTorus[Xaxis], TranslateTorus[Yaxis], TranslateTorus[Zaxis] ) * rot4 * Scale(1.0, 1.0, 1.0);
+    transform = Translate( TranslateTorus[Xaxis], TranslateTorus[Yaxis], TranslateTorus[Zaxis] ) * rot4 * Scale(0.8, 0.8, 0.8);
     glUniformMatrix4fv( glGetUniformLocation( program, "model" ), 1, GL_TRUE, transform );
     
     glVertexAttribPointer( vPosition, 4, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(TORUS_OFFSET) );
@@ -287,16 +322,22 @@ idle( void )
     Theta1[Axis] = fmod(Theta1[Axis]+speed1, 360.0);
     Theta2[Axis] = fmod(Theta2[Axis]+speed2, 360.0);
     ThetaSphere[Axis] = fmod(ThetaSphere[Axis]+speed2, 360.0);
+    ThetaTorus[Axis] = fmod(ThetaTorus[Axis]+speed2, 360.0);
+
     
     Axis = Yaxis;
     Theta1[Axis] = fmod(Theta1[Axis]+speed1, 360.0);
     Theta2[Axis] = fmod(Theta2[Axis]+speed2, 360.0);
     ThetaSphere[Axis] = fmod(ThetaSphere[Axis]+speed3, 360.0);
+    ThetaTorus[Axis] = fmod(ThetaTorus[Axis]+speed2, 360.0);
+
     
     Axis = Xaxis;
     Theta1[Axis] = fmod(Theta1[Axis]+speed1, 360.0);
     Theta2[Axis] = fmod(Theta2[Axis]+speed2, 360.0);
     ThetaSphere[Axis] = fmod(ThetaSphere[Axis]+speed1, 360.0);
+    ThetaTorus[Axis] = fmod(ThetaTorus[Axis]+speed2, 360.0);
+
     
     //ry = fmod( sry + 0.2, 360.0);
     //Axis = Yaxis;
