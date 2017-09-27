@@ -11,6 +11,7 @@
 #include <cstdlib>
 #include <cmath>
 #include <iostream>
+using namespace std;
 
 #include <GLUT/glut.h>
 
@@ -21,6 +22,8 @@
 // Array of rotation angles (in degrees) for each coordinate axis
 enum { Xaxis = 0, Yaxis = 1, Zaxis = 2, NumAxes = 3 };
 int      Axis = Zaxis;
+int viewAxis = Xaxis;
+
 GLfloat  Theta1[NumAxes] = { 0.0, 0.0, 0.0 };
 GLfloat  Theta2[NumAxes] = { 0.0, 0.0, 0.0 };
 GLfloat  ThetaSphere[NumAxes] = { 0.0, 0.0, 0.0 };
@@ -30,6 +33,7 @@ GLfloat TranslateCube[NumAxes] = {-0.8,0.8,0.0};
 GLfloat TranslateCyl[NumAxes] = {0.0,0.0,0.0};
 GLfloat TranslateSphere[NumAxes] = {-0.7,-0.7,0.0};
 GLfloat TranslateTorus[NumAxes] = {0.0,0.0,0.0};
+
 
 size_t COLOR_OFFSET;
 size_t CUBE_OFFSET;
@@ -123,7 +127,7 @@ init()
     */
     
     glEnable( GL_DEPTH_TEST );
-    glClearColor( 1.0, 1.0, 1.0, 1.0 );
+    glClearColor( 0.0, 0.0, 0.0, 0.0 );
     
     
     
@@ -177,12 +181,47 @@ init()
 
 float sry = 0.0;
 
+
+
+vec4 eye = vec4(0.0, 0.0, -0.25, 1.0);
+vec4 at = vec4(0.0, 0.0, 0.0, 1.0);
+vec4 up = vec4(0.0, 1.0, 0.0, 0.0);
+mat4 view_matrix;
+
+
+float r = 0.3;
+float td_y = 0.0;
+float td_z = 0.0;
+
 void
 display( void )
 {
     glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
     
     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    
+    
+    float tr_y = td_y * M_PI/180.0;
+    float tr_z = td_z * M_PI/180.0;
+    eye.z = r * (cos(tr_z)) * cos(tr_y);
+    eye.x = r * (cos(tr_z)) * sin(tr_y);
+    eye.y = r * sin(tr_z);
+    up = vec4(0.0, cos(tr_z), 0.0, 0.0);
+    
+    
+    /**
+    vec4 n = normalize(eye - at);
+    vec4 u = vec4(normalize(cross(up, n)), 0.0);
+    vec4 v = vec4(normalize(cross(n, u)), 0.0);
+    vec4 t = vec4(0.0,0.0,0.0,1.0);
+    mat4 c = mat4(u,v,n,t);
+     
+    view_matrix = c * Translate(-eye.x, -eye.y, -eye.z);
+    */
+    //at = {eye[0], eye[1], static_cast<GLfloat>(eye[2] + 0.5), 1.0};
+    view_matrix = LookAt(eye, at, up);
+    glUniformMatrix4fv( glGetUniformLocation( program, "view" ), 1, GL_TRUE, view_matrix );
+
     
     
     //FOR CYLINDER
@@ -198,6 +237,8 @@ display( void )
     
     glDrawArrays( GL_TRIANGLES, 0, NumVerticesCylinder );
     
+    
+
     
     //FOR CUBE
     
@@ -256,20 +297,106 @@ display( void )
     
 }
 
-//----------------------------------------------------------------------------
 
+/**
+float r = 0.5;
+int p = 0;
+int n = 0;
+GLfloat pp = M_PI * (float)p / (float)sphericalLevels;
+GLfloat tt = 2 * M_PI * (float)n / (float)sphericalLevels;
+*/
+
+
+
+
+
+//----------------------------------------------------------------------------
+float cameraSpeed = 0.03;
 void
 keyboard( unsigned char key, int x, int y )
 {
-    switch( key ) {
+    switch( key )
+    {
         case 033: // Escape Key
         case 'q': case 'Q':
             exit( EXIT_SUCCESS );
             break;
-        case 'x':  Axis = Xaxis;  break;
-        case 'y':  Axis = Yaxis;  break;
-        case 'z':  Axis = Zaxis;  break;
+        case 'x':  Axis = Xaxis;
+            //viewAxis = Xaxis;
+            break;
+        case 'y':  Axis = Yaxis;
+            //viewAxis = Yaxis;
+            break;
+        case 'z':  Axis = Zaxis;
+            //viewAxis = Zaxis;
+            break;
+        case 'a':
+            /*
+            if (viewAxis == Xaxis)
+            {
+                eye[Xaxis]-=cameraSpeed;
+            }
+             
+            if (n > 0)
+            {
+                n-=1;
+            }
+            else
+            {
+                n = 360;
+            }
+            tt = 2 * M_PI * (float)n / (float)sphericalLevels;
             
+            eye[Xaxis] = (r * sin(pp))  * cos(tt);
+            eye[Yaxis] = (r * cos(pp));
+            eye[Zaxis] = (r * sin(pp)) * sin(tt);
+            eye[NumAxes] = 1.0;
+             */
+            eye = vec4(0.25, 0.25, 0.25, 1.0);
+            glutPostRedisplay();
+            break;
+        case 'd':
+            /**
+            if (viewAxis == Xaxis)
+            {
+                eye[Xaxis]+=cameraSpeed;
+            }
+            
+            if (n < 360)
+            {
+                n+=1;
+            }
+            else
+            {
+                n = 0;
+            }
+            
+            tt = 2 * M_PI * (float)n / (float)sphericalLevels;
+            eye[Xaxis] = (r * sin(pp))  * cos(tt);
+            eye[Yaxis] = (r * cos(pp));
+            eye[Zaxis] = (r * sin(pp)) * sin(tt);
+            eye[NumAxes] = 1.0;
+             */
+            eye = vec4(0.0, 0.0, 0.25, 1.0);
+
+            glutPostRedisplay();
+
+            break;
+        case 'w':
+            //eye[Yaxis]-=cameraSpeed;
+            td_z += 5.0;
+            td_z = fmod(td_z, 360.0);
+
+            glutPostRedisplay();
+
+            break;
+        case 's':
+            td_y += 5.0;
+            td_y = fmod(td_y, 360.0);
+            //eye[Yaxis]+=cameraSpeed;
+            glutPostRedisplay();
+
+            break;
     }
 }
 
@@ -299,6 +426,7 @@ float posZ = 0.0;
 void
 idle( void )
 {
+    
     if (posY >= -0.8 && posX <= -0.8 && posX >= -1.0)
     {
         posY-=0.05;
@@ -342,6 +470,19 @@ idle( void )
     //ry = fmod( sry + 0.2, 360.0);
     //Axis = Yaxis;
     //ThetaSphere[Axis] = fmod(<#double#>, <#double#>)
+    
+    //move camera
+    
+    /**
+    if (eye[0]<0.8)
+    {
+        eye[0]+=0.02;
+    }
+    else if (eye[0]>0.8)
+    {
+        eye[0]-=0.2;
+    }
+    */
     
     glutPostRedisplay();
 }

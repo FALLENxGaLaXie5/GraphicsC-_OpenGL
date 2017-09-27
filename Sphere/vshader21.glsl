@@ -9,6 +9,7 @@ out vec4 color;
 
 //---- uniforms
 uniform mat4 model;
+uniform mat4 view;
 uniform vec4 obj_color;
 uniform bool obj_color_on = false;
 
@@ -19,7 +20,7 @@ void
 main()
 {
     //---- transform the vertex
-    gl_Position = model * vPosition;
+    gl_Position = view * model * vPosition;
     
     
     if (obj_color_on)
