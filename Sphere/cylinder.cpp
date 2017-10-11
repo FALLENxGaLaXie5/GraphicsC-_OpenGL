@@ -251,7 +251,12 @@ display( void )
     view_matrix = c * Translate(-eye.x, -eye.y, -eye.z);
     */
     //at = {eye[0], eye[1], static_cast<GLfloat>(eye[2] + 0.5), 1.0};
-    view_matrix = LookAt(eye, at, up);
+    
+    if (sphericalMode == true)
+    {
+        view_matrix = LookAt(eye, at, up);
+    }
+    
     glUniformMatrix4fv( glGetUniformLocation( program, "view" ), 1, GL_TRUE, view_matrix );
 
     
@@ -393,9 +398,11 @@ keyboard( unsigned char key, int x, int y )
         case 'z':  Axis = Zaxis;
             //viewAxis = Zaxis;
             break;
+            //o will activate or deactivate spherical mode
         case 'o':
             sphericalMode = !sphericalMode;
             break;
+            //e will be the default location
         case 'e':
             eye = vec4(0.0, 0.0, 2.0, 1.0);
             at = vec4(0.0, 0.0, 0.0, 1.0);
@@ -446,13 +453,13 @@ keyboard( unsigned char key, int x, int y )
         case 's':
             if (sphericalMode)
             {
-                td_y += 5.0;
-                td_y = fmod(td_y, 360.0);
+                td_y -= 5.0;
+                td_z = fmod(td_z, 360.0);
                 //eye[Yaxis]+=cameraSpeed;
             }
             else
             {
-                view_matrix = Translate(0, 0.0, -0.2);
+                view_matrix = Translate(0, 0.0, -0.2) * view_matrix;
             }
             
             glutPostRedisplay();
