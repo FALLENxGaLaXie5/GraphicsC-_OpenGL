@@ -30,12 +30,32 @@ GLfloat  Theta3[NumAxes] = { 0.0, 0.0, 0.0 };
 //----------------------------------------------------------------------------
 
 size_t CUBE_OFFSET;
-size_t COLOR_OFFSET;
 size_t CUBE_NORMALS_OFFSET;
-size_t CYLINDER_OFFSET;
-size_t CYLINDER_NORMALS_OFFSET;
-size_t SPHERE_OFFSET;
-size_t SPHERE_NORMALS_OFFSET;
+
+size_t COLOR_OFFSET;
+
+size_t GROUND_OFFSET;
+size_t GROUND_NORMALS_OFFSET;
+
+size_t LIGHT_POLE1_OFFSET;
+size_t LIGHT_POLE1NORMALS_OFFSET;
+size_t SPHERE_LIGHT1_OFFSET;
+size_t SPHERE_LIGHT1_NORMALS_OFFSET;
+size_t LIGHT1_BASE_OFFSET;
+size_t LIGHT1_BASENORMALS_OFFSET;
+
+size_t LIGHT_POLE2_OFFSET;
+size_t LIGHT_POLE2NORMALS_OFFSET;
+size_t SPHERE_LIGHT2_OFFSET;
+size_t SPHERE_LIGHT2_NORMALS_OFFSET;
+size_t LIGHT2_BASE_OFFSET;
+size_t LIGHT2_BASENORMALS_OFFSET;
+
+size_t LIGHT1_OFFSET;
+size_t LIGHT1_NORMAL;
+size_t LIGHT2_OFFSET;
+size_t LIGHT2_NORMAL;
+
 
 GLuint program;
 GLuint vPosition;
@@ -54,6 +74,7 @@ init()
     colorcube();
     colortube();
     colorbube();
+    
     //---------------------------------------------------------------------
     
     
@@ -62,28 +83,68 @@ init()
     CUBE_OFFSET = 0;
     COLOR_OFFSET = sizeof(points_cube);
     CUBE_NORMALS_OFFSET = COLOR_OFFSET + sizeof(colors);
-    CYLINDER_OFFSET = CUBE_NORMALS_OFFSET + sizeof(normals_cube);
-    CYLINDER_NORMALS_OFFSET = CYLINDER_OFFSET + sizeof(points_cylinder);
-    SPHERE_OFFSET = CYLINDER_NORMALS_OFFSET + sizeof(normals_cylinder);
-    SPHERE_NORMALS_OFFSET = SPHERE_OFFSET + sizeof(points_sphere);
+    
+    GROUND_OFFSET = CUBE_NORMALS_OFFSET + sizeof(normals_cube);
+    GROUND_NORMALS_OFFSET = GROUND_OFFSET + sizeof(points_cube);
+    
+    LIGHT_POLE1_OFFSET = GROUND_NORMALS_OFFSET + sizeof(normals_cube);
+    LIGHT_POLE1NORMALS_OFFSET = LIGHT_POLE1_OFFSET + sizeof(points_cylinder);
+    SPHERE_LIGHT1_OFFSET = LIGHT_POLE1NORMALS_OFFSET + sizeof(normals_cylinder);
+    SPHERE_LIGHT1_NORMALS_OFFSET = SPHERE_LIGHT1_OFFSET + sizeof(points_sphere);
+    LIGHT1_BASE_OFFSET = SPHERE_LIGHT1_NORMALS_OFFSET + sizeof(normals_sphere);
+    LIGHT1_BASENORMALS_OFFSET = LIGHT1_BASE_OFFSET + sizeof(points_cylinder);
+    
+    LIGHT_POLE2_OFFSET = LIGHT1_BASENORMALS_OFFSET + sizeof(normals_cylinder);
+    LIGHT_POLE2NORMALS_OFFSET = LIGHT_POLE2_OFFSET + sizeof(points_cylinder);
+    SPHERE_LIGHT2_OFFSET = LIGHT_POLE2NORMALS_OFFSET + sizeof(normals_cylinder);
+    SPHERE_LIGHT2_NORMALS_OFFSET = SPHERE_LIGHT2_OFFSET + sizeof(points_sphere);
+    LIGHT2_BASE_OFFSET = SPHERE_LIGHT2_NORMALS_OFFSET + sizeof(normals_sphere);
+    LIGHT2_BASENORMALS_OFFSET = LIGHT2_BASE_OFFSET + sizeof(points_cylinder);
+
+    LIGHT1_OFFSET = LIGHT2_BASENORMALS_OFFSET + sizeof(normals_cylinder);
+    LIGHT1_NORMAL = LIGHT1_OFFSET + sizeof(points_sphere);
+    LIGHT2_OFFSET = LIGHT1_NORMAL + sizeof(normals_sphere);
+    LIGHT2_NORMAL = LIGHT2_OFFSET + sizeof(points_sphere);
+    
     
     // Create a vertex array object
     GLuint vao;
     glGenVertexArrays( 1, &vao );  // removed 'APPLE' suffix for 3.2
     glBindVertexArray( vao );
     
+    //cube, cube, cylinder, cylinder, cylinder, cylinder, sphere, sphere
+    
     // Create and initialize a buffer object
     GLuint buffer;
     glGenBuffers( 1, &buffer );
     glBindBuffer( GL_ARRAY_BUFFER, buffer );
-    glBufferData( GL_ARRAY_BUFFER, sizeof(points_cube) + sizeof(normals_cube) + sizeof(colors) + sizeof(points_cylinder) + sizeof(normals_cylinder) + sizeof(points_sphere) + sizeof(normals_sphere), NULL, GL_STATIC_DRAW );
+    glBufferData( GL_ARRAY_BUFFER, sizeof(points_cube) + sizeof(normals_cube) + sizeof(points_cube) + sizeof(normals_cube) + sizeof(colors) + sizeof(points_cylinder) + sizeof(normals_cylinder) + sizeof(points_cylinder) + sizeof(normals_cylinder) + sizeof(points_cylinder) + sizeof(normals_cylinder) + sizeof(points_cylinder) + sizeof(normals_cylinder) + sizeof(points_sphere) + sizeof(normals_sphere) + sizeof(points_sphere) + sizeof(normals_sphere) + sizeof(points_sphere) + sizeof(normals_sphere) + sizeof(points_sphere) + sizeof(normals_sphere),NULL, GL_STATIC_DRAW );
+    
     glBufferSubData( GL_ARRAY_BUFFER, CUBE_OFFSET, sizeof(points_cube), points_cube );
     glBufferSubData( GL_ARRAY_BUFFER, COLOR_OFFSET, sizeof(colors), colors );
     glBufferSubData( GL_ARRAY_BUFFER, CUBE_NORMALS_OFFSET, sizeof(normals_cube), normals_cube );
-    glBufferSubData( GL_ARRAY_BUFFER, CYLINDER_OFFSET, sizeof(points_cylinder), points_cylinder );
-    glBufferSubData( GL_ARRAY_BUFFER, CYLINDER_NORMALS_OFFSET, sizeof(normals_cylinder), normals_cylinder );
-    glBufferSubData( GL_ARRAY_BUFFER, SPHERE_OFFSET, sizeof(points_sphere), points_sphere );
-    glBufferSubData( GL_ARRAY_BUFFER, SPHERE_NORMALS_OFFSET, sizeof(normals_sphere), normals_sphere );
+    glBufferSubData( GL_ARRAY_BUFFER, GROUND_OFFSET, sizeof(points_cube), points_cube );
+    glBufferSubData( GL_ARRAY_BUFFER, GROUND_NORMALS_OFFSET, sizeof(normals_cube), normals_cube );
+    
+    glBufferSubData( GL_ARRAY_BUFFER, LIGHT_POLE1_OFFSET, sizeof(points_cylinder), points_cylinder );
+    glBufferSubData( GL_ARRAY_BUFFER, LIGHT_POLE1NORMALS_OFFSET, sizeof(normals_cylinder), normals_cylinder );
+    glBufferSubData( GL_ARRAY_BUFFER, SPHERE_LIGHT1_OFFSET, sizeof(points_sphere), points_sphere );
+    glBufferSubData( GL_ARRAY_BUFFER, SPHERE_LIGHT1_NORMALS_OFFSET, sizeof(normals_sphere), normals_sphere );
+    glBufferSubData( GL_ARRAY_BUFFER, LIGHT1_BASE_OFFSET, sizeof(points_cylinder), points_cylinder );
+    glBufferSubData( GL_ARRAY_BUFFER, LIGHT1_BASENORMALS_OFFSET, sizeof(normals_cylinder), normals_cylinder );
+
+    glBufferSubData( GL_ARRAY_BUFFER, LIGHT_POLE2_OFFSET, sizeof(points_cylinder), points_cylinder );
+    glBufferSubData( GL_ARRAY_BUFFER, LIGHT_POLE2NORMALS_OFFSET, sizeof(normals_cylinder), normals_cylinder );
+    glBufferSubData( GL_ARRAY_BUFFER, SPHERE_LIGHT2_OFFSET, sizeof(points_sphere), points_sphere );
+    glBufferSubData( GL_ARRAY_BUFFER, SPHERE_LIGHT2_NORMALS_OFFSET, sizeof(normals_sphere), normals_sphere );
+    glBufferSubData( GL_ARRAY_BUFFER, LIGHT2_BASE_OFFSET, sizeof(points_cylinder), points_cylinder );
+    glBufferSubData( GL_ARRAY_BUFFER, LIGHT2_BASENORMALS_OFFSET, sizeof(normals_cylinder), normals_cylinder );
+    
+    glBufferSubData( GL_ARRAY_BUFFER, LIGHT1_OFFSET, sizeof(points_sphere), points_sphere );
+    glBufferSubData( GL_ARRAY_BUFFER, LIGHT1_NORMAL, sizeof(normals_sphere), normals_sphere );
+    glBufferSubData( GL_ARRAY_BUFFER, LIGHT2_OFFSET, sizeof(points_sphere), points_sphere );
+    glBufferSubData( GL_ARRAY_BUFFER, LIGHT2_NORMAL, sizeof(normals_sphere), normals_sphere );
+    
     
     
     //---------------------------------------------------------------------
@@ -113,6 +174,9 @@ mat4 proj_matrix;
 mat4 view_matrix;
 
 float r = 2.9;
+
+
+float poleRadius = 0.3;
 
 void
 display( void )
@@ -160,6 +224,9 @@ display( void )
     
     glUniformMatrix4fv( glGetUniformLocation( program, "view" ), 1, GL_TRUE, view_matrix );
     
+    
+    
+    
     //---- cube
     
     // material properties
@@ -178,7 +245,7 @@ display( void )
     glUniform4fv( glGetUniformLocation(program, "ks"), 1, ks );
     glUniform1f( glGetUniformLocation(program, "Shininess"), s );
     
-    mat4 transform = Translate( 0.5, 0.0, 0.0 ) * Scale(1.0, 1.0, 1.0);
+    mat4 transform = Translate( 0.5, 1.0, 0.0 ) * Scale(1.0, 1.0, 1.0);
     
     glUniformMatrix4fv( glGetUniformLocation( program, "model" ), 1, GL_TRUE, transform );
     
@@ -189,12 +256,81 @@ display( void )
     
     glDrawArrays( GL_TRIANGLES, 0, NumVerticesCube );
     
-    //---- sphere
+    
+    
+    
+    //---- ground
+    
+    // material properties
+
+    //ka = vec4(0.4, 0.4, 0.4, 1.0);
+    //kd = vec4(0.3, 0.3, 1.0, 1.0);
+    //ks = vec4(0.2, 0.2, 0.2, 1.0);
+    
+    ka = vec4(0.1, 1.0, 0.1, 1.0);
+    kd = vec4(0.1, 1.0, 0.1, 1.0);
+    ks = vec4(0.1, 1.0, 0.1, 1.0);
+    s = 1.0;
+    
+    glUniform4fv( glGetUniformLocation(program, "ka"), 1, ka );
+    glUniform4fv( glGetUniformLocation(program, "kd"), 1, kd );
+    glUniform4fv( glGetUniformLocation(program, "ks"), 1, ks );
+    glUniform1f( glGetUniformLocation(program, "Shininess"), s );
+    
+    transform = Translate( 0.0, 0.0, 0.0 ) * Scale(20.0, 1.0, 20.0);
+    
+    glUniformMatrix4fv( glGetUniformLocation( program, "model" ), 1, GL_TRUE, transform );
+    
+    glVertexAttribPointer( vPosition, 4, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(GROUND_OFFSET) );
+    glVertexAttribPointer( vNormal, 3, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(GROUND_NORMALS_OFFSET) );
+    
+    glUniform1i( glGetUniformLocation(program, "obj_color_on"), true );
+    glUniform4fv( glGetUniformLocation(program, "obj_color"), 1, vec4(0.0, 0.9, 0.0, 1.0) );
+    
+    glDrawArrays( GL_TRIANGLES, 0, NumVerticesCube );
+    
+    
+    
+    
+    
+    
+    //---- light pole 1
+    
+    // material properties
+    
+    //ka = vec4(0.4, 0.4, 0.4, 1.0);
+    //kd = vec4(0.3, 0.3, 1.0, 1.0);
+    //ks = vec4(0.2, 0.2, 0.2, 1.0);
+    
+    ka = vec4(0.2, 0.0, 0.0, 1.0);
+    kd = vec4(0.2, 0.0, 0.0, 1.0);
+    ks = vec4(0.2, 0.0, 0.0, 1.0);
+    s = 5.0;
+    
+    glUniform4fv( glGetUniformLocation(program, "ka"), 1, ka );
+    glUniform4fv( glGetUniformLocation(program, "kd"), 1, kd );
+    glUniform4fv( glGetUniformLocation(program, "ks"), 1, ks );
+    glUniform1f( glGetUniformLocation(program, "Shininess"), s );
+    
+    transform = Translate( -5.0, 3.0, 0.0 ) * Scale(poleRadius, 5.0, poleRadius);
+    
+    glUniformMatrix4fv( glGetUniformLocation( program, "model" ), 1, GL_TRUE, transform );
+    
+    glVertexAttribPointer( vPosition, 4, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(LIGHT_POLE1_OFFSET) );
+    glVertexAttribPointer( vNormal, 3, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(LIGHT_POLE1NORMALS_OFFSET) );
+    
+    glUniform1i( glGetUniformLocation(program, "obj_color_on"), false );
+    
+    glDrawArrays( GL_TRIANGLES, 0, NumVerticesCylinder );
+    
+    
+    
+    //---- sphere for light 1
 
     // material properties
-    ka = vec4(0.9, 0.1, 0.1, 1.0);
-    kd = vec4(1.0, 0.0, 0.0, 1.0);
-    ks = vec4(1.0, 0.4, 0.4, 1.0);
+    ka = vec4(1.0, 1.0, 1.0, 1.0);
+    kd = vec4(1.0, 1.0, 1.0, 1.0);
+    ks = vec4(1.0, 1.0, 1.0, 1.0);
     s = 25.0;
     
     glUniform4fv( glGetUniformLocation(program, "ka"), 1, ka );
@@ -202,20 +338,205 @@ display( void )
     glUniform4fv( glGetUniformLocation(program, "ks"), 1, ks );
     glUniform1f( glGetUniformLocation(program, "Shininess"), s );
 
-    transform = Translate( -1.5, 0.0, 0.0 );
+    transform = Translate( -5.0, 4.3, 0.0 ) * Scale(poleRadius, poleRadius, poleRadius);
     
     glUniformMatrix4fv( glGetUniformLocation( program, "model" ), 1, GL_TRUE, transform );
     
-    glVertexAttribPointer( vPosition, 4, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(SPHERE_OFFSET) );
-    glVertexAttribPointer( vNormal, 3, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(SPHERE_NORMALS_OFFSET) );
+    glVertexAttribPointer( vPosition, 4, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(SPHERE_LIGHT1_OFFSET) );
+    glVertexAttribPointer( vNormal, 3, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(SPHERE_LIGHT1_NORMALS_OFFSET) );
     
-    glUniform1i( glGetUniformLocation(program, "obj_color_on"), true );
-    glUniform4fv( glGetUniformLocation(program, "obj_color"), 1, vec4(0.0, 0.9, 0.0, 1.0) );
+    glUniform1i( glGetUniformLocation(program, "obj_color_on"), false );
+    
+    glDrawArrays( GL_TRIANGLES, 0, NumVerticesSphere );
+    
+     
+    
+    
+    
+    
+    //---- light base 1
+    
+    // material properties
+    
+    //ka = vec4(0.4, 0.4, 0.4, 1.0);
+    //kd = vec4(0.3, 0.3, 1.0, 1.0);
+    //ks = vec4(0.2, 0.2, 0.2, 1.0);
+    
+    ka = vec4(0.1, 0.1, 0.1, 1.0);
+    kd = vec4(0.1, 0.1, 0.1, 1.0);
+    ks = vec4(0.1, 0.1, 0.1, 1.0);
+    s = 2.0;
+    
+    glUniform4fv( glGetUniformLocation(program, "ka"), 1, ka );
+    glUniform4fv( glGetUniformLocation(program, "kd"), 1, kd );
+    glUniform4fv( glGetUniformLocation(program, "ks"), 1, ks );
+    glUniform1f( glGetUniformLocation(program, "Shininess"), s );
+    
+    transform = Translate( -5.0, 0.5, 0.0 ) * Scale(3.0, 1.5, 3.0);
+    
+    glUniformMatrix4fv( glGetUniformLocation( program, "model" ), 1, GL_TRUE, transform );
+    
+    glVertexAttribPointer( vPosition, 4, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(LIGHT1_BASE_OFFSET) );
+    glVertexAttribPointer( vNormal, 3, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(LIGHT1_BASENORMALS_OFFSET) );
+    
+    glUniform1i( glGetUniformLocation(program, "obj_color_on"), false );
+    
+    glDrawArrays( GL_TRIANGLES, 0, NumVerticesCylinder );
+    
+    
+    
+    
+    
+    
+    //---- light pole 2
+    
+    // material properties
+    
+    //ka = vec4(0.4, 0.4, 0.4, 1.0);
+    //kd = vec4(0.3, 0.3, 1.0, 1.0);
+    //ks = vec4(0.2, 0.2, 0.2, 1.0);
+    
+    ka = vec4(0.2, 0.0, 0.0, 1.0);
+    kd = vec4(0.2, 0.0, 0.0, 1.0);
+    ks = vec4(0.2, 0.0, 0.0, 1.0);
+    s = 5.0;
+    
+    glUniform4fv( glGetUniformLocation(program, "ka"), 1, ka );
+    glUniform4fv( glGetUniformLocation(program, "kd"), 1, kd );
+    glUniform4fv( glGetUniformLocation(program, "ks"), 1, ks );
+    glUniform1f( glGetUniformLocation(program, "Shininess"), s );
+    
+    transform = Translate( 5.0, 3.0, 0.0 ) * Scale(poleRadius, 5.0, poleRadius);
+    
+    glUniformMatrix4fv( glGetUniformLocation( program, "model" ), 1, GL_TRUE, transform );
+    
+    glVertexAttribPointer( vPosition, 4, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(LIGHT_POLE2_OFFSET) );
+    glVertexAttribPointer( vNormal, 3, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(LIGHT_POLE2NORMALS_OFFSET) );
+    
+    glUniform1i( glGetUniformLocation(program, "obj_color_on"), false );
+    
+    glDrawArrays( GL_TRIANGLES, 0, NumVerticesCylinder );
+    
+    
+    
+    
+    
+    
+    //---- sphere for light 2
+    
+    // material properties
+    ka = vec4(1.0, 1.0, 1.0, 1.0);
+    kd = vec4(1.0, 1.0, 1.0, 1.0);
+    ks = vec4(1.0, 1.0, 1.0, 1.0);
+    s = 25.0;
+    
+    glUniform4fv( glGetUniformLocation(program, "ka"), 1, ka );
+    glUniform4fv( glGetUniformLocation(program, "kd"), 1, kd );
+    glUniform4fv( glGetUniformLocation(program, "ks"), 1, ks );
+    glUniform1f( glGetUniformLocation(program, "Shininess"), s );
+    
+    transform = Translate( 5.0, 4.3, 0.0 ) * Scale(poleRadius, poleRadius, poleRadius);
+    
+    glUniformMatrix4fv( glGetUniformLocation( program, "model" ), 1, GL_TRUE, transform );
+    
+    glVertexAttribPointer( vPosition, 4, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(SPHERE_LIGHT2_OFFSET) );
+    glVertexAttribPointer( vNormal, 3, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(SPHERE_LIGHT2_NORMALS_OFFSET) );
+    
+    glUniform1i( glGetUniformLocation(program, "obj_color_on"), false );
     
     glDrawArrays( GL_TRIANGLES, 0, NumVerticesSphere );
     
     
+    
+    
+    
+    
+    //---- light base 2
+    
+    // material properties
+    
+    //ka = vec4(0.4, 0.4, 0.4, 1.0);
+    //kd = vec4(0.3, 0.3, 1.0, 1.0);
+    //ks = vec4(0.2, 0.2, 0.2, 1.0);
+    
+    ka = vec4(0.1, 0.1, 0.1, 1.0);
+    kd = vec4(0.1, 0.1, 0.1, 1.0);
+    ks = vec4(0.1, 0.1, 0.1, 1.0);
+    s = 2.0;
+    
+    glUniform4fv( glGetUniformLocation(program, "ka"), 1, ka );
+    glUniform4fv( glGetUniformLocation(program, "kd"), 1, kd );
+    glUniform4fv( glGetUniformLocation(program, "ks"), 1, ks );
+    glUniform1f( glGetUniformLocation(program, "Shininess"), s );
+    
+    transform = Translate( 5.0, 0.5, 0.0 ) * Scale(3.0, 1.5, 3.0);
+    
+    glUniformMatrix4fv( glGetUniformLocation( program, "model" ), 1, GL_TRUE, transform );
+    
+    glVertexAttribPointer( vPosition, 4, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(LIGHT2_BASE_OFFSET) );
+    glVertexAttribPointer( vNormal, 3, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(LIGHT2_BASENORMALS_OFFSET) );
+    
+    glUniform1i( glGetUniformLocation(program, "obj_color_on"), false );
+    
+    glDrawArrays( GL_TRIANGLES, 0, NumVerticesCylinder );
+    
+    
+    
+    //---- light 1
+    
+    // material properties
+    ka = vec4(1.0, 1.0, 1.0, 1.0);
+    kd = vec4(1.0, 1.0, 1.0, 1.0);
+    ks = vec4(1.0, 1.0, 1.0, 1.0);
+    s = 25.0;
+    
+    glUniform4fv( glGetUniformLocation(program, "ka"), 1, ka );
+    glUniform4fv( glGetUniformLocation(program, "kd"), 1, kd );
+    glUniform4fv( glGetUniformLocation(program, "ks"), 1, ks );
+    glUniform1f( glGetUniformLocation(program, "Shininess"), s );
+    
+    transform = Translate( -5.0, 5.5, 0.0 ) * Scale(1.5, 1.5, 1.5);
+    
+    glUniformMatrix4fv( glGetUniformLocation( program, "model" ), 1, GL_TRUE, transform );
+    
+    glVertexAttribPointer( vPosition, 4, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(LIGHT1_OFFSET) );
+    glVertexAttribPointer( vNormal, 3, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(LIGHT1_NORMAL) );
+    
+    glUniform1i( glGetUniformLocation(program, "obj_color_on"), false );
+    
+    glDrawArrays( GL_TRIANGLES, 0, NumVerticesSphere );
+    
+    
+    
+    
+    //---- light 2
+    
+    // material properties
+    ka = vec4(1.0, 1.0, 1.0, 1.0);
+    kd = vec4(1.0, 1.0, 1.0, 1.0);
+    ks = vec4(1.0, 1.0, 1.0, 1.0);
+    s = 25.0;
+    
+    glUniform4fv( glGetUniformLocation(program, "ka"), 1, ka );
+    glUniform4fv( glGetUniformLocation(program, "kd"), 1, kd );
+    glUniform4fv( glGetUniformLocation(program, "ks"), 1, ks );
+    glUniform1f( glGetUniformLocation(program, "Shininess"), s );
+    
+    transform = Translate( 5.0, 5.5, 0.0 ) * Scale(1.5, 1.5, 1.5);
+    
+    glUniformMatrix4fv( glGetUniformLocation( program, "model" ), 1, GL_TRUE, transform );
+    
+    glVertexAttribPointer( vPosition, 4, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(LIGHT2_OFFSET) );
+    glVertexAttribPointer( vNormal, 3, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(LIGHT2_NORMAL) );
+    
+    glUniform1i( glGetUniformLocation(program, "obj_color_on"), false );
+    
+    glDrawArrays( GL_TRIANGLES, 0, NumVerticesSphere );
+    
+    
+    
     glutSwapBuffers();
+    
 }
 
 
@@ -235,6 +556,11 @@ keyboard( unsigned char key, int x, int y )
             Theta3[Axis] += 5.0;
             Theta3[Axis] = fmod(Theta3[Axis], 360.0);
             glutPostRedisplay();
+        case 'Y':    //---- theta
+            Axis = Yaxis;
+            Theta3[Axis] -= 5.0;
+            Theta3[Axis] = fmod(Theta3[Axis], 360.0);
+            glutPostRedisplay();
             break;
         case 'z':    //---- phi
             Axis = Zaxis;
@@ -242,7 +568,12 @@ keyboard( unsigned char key, int x, int y )
             Theta3[Axis] = fmod(Theta3[Axis], 360.0);
             glutPostRedisplay();
             break;
-            
+        case 'Z':    //---- phi
+            Axis = Zaxis;
+            Theta3[Axis] -= 5.0;
+            Theta3[Axis] = fmod(Theta3[Axis], 360.0);
+            glutPostRedisplay();
+            break;
         case 'r':    //---- increase radius
             r += 0.5;
             glutPostRedisplay();
