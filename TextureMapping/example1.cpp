@@ -40,6 +40,7 @@ size_t CYLINDER_NORMALS_OFFSET;
 size_t SPHERE_OFFSET;
 size_t SPHERE_NORMALS_OFFSET;
 size_t SPHERE_TEXCOORDS_OFFSET;
+size_t CUBE_TEXCOORDS_OFFSET;
 
 
 //----------------------------------------------------------------------------
@@ -116,6 +117,7 @@ init()
     SPHERE_OFFSET = CYLINDER_NORMALS_OFFSET + sizeof(normals_cylinder);
     SPHERE_NORMALS_OFFSET = SPHERE_OFFSET + sizeof(points_sphere);
     SPHERE_TEXCOORDS_OFFSET = SPHERE_NORMALS_OFFSET + sizeof(normals_sphere);
+    CUBE_TEXCOORDS_OFFSET = SPHERE_TEXCOORDS_OFFSET + sizeof(tex_coords_sphere);
     
     // Create a vertex array object
     GLuint vao;
@@ -126,7 +128,7 @@ init()
     GLuint buffer;
     glGenBuffers( 1, &buffer );
     glBindBuffer( GL_ARRAY_BUFFER, buffer );
-    glBufferData( GL_ARRAY_BUFFER, sizeof(points_cube) + sizeof(normals_cube) + sizeof(colors) + sizeof(points_cylinder) + sizeof(normals_cylinder) + sizeof(points_sphere) + sizeof(normals_sphere) + sizeof(tex_coords_sphere), NULL, GL_STATIC_DRAW );
+    glBufferData( GL_ARRAY_BUFFER, sizeof(points_cube) + sizeof(normals_cube) + sizeof(colors) + sizeof(points_cylinder) + sizeof(normals_cylinder) + sizeof(points_sphere) + sizeof(normals_sphere) + sizeof(tex_coords_sphere) + sizeof(tex_coords_cube), NULL, GL_STATIC_DRAW );
     glBufferSubData( GL_ARRAY_BUFFER, CUBE_OFFSET, sizeof(points_cube), points_cube );
     glBufferSubData( GL_ARRAY_BUFFER, COLOR_OFFSET, sizeof(colors), colors );
     glBufferSubData( GL_ARRAY_BUFFER, CUBE_NORMALS_OFFSET, sizeof(normals_cube), normals_cube );
@@ -135,6 +137,7 @@ init()
     glBufferSubData( GL_ARRAY_BUFFER, SPHERE_OFFSET, sizeof(points_sphere), points_sphere );
     glBufferSubData( GL_ARRAY_BUFFER, SPHERE_NORMALS_OFFSET, sizeof(normals_sphere), normals_sphere );
     glBufferSubData( GL_ARRAY_BUFFER, SPHERE_TEXCOORDS_OFFSET, sizeof(tex_coords_sphere), tex_coords_sphere );
+    glBufferSubData( GL_ARRAY_BUFFER, CUBE_TEXCOORDS_OFFSET, sizeof(tex_coords_cube), tex_coords_cube );
     
     
     //---------------------------------------------------------------------
@@ -302,6 +305,36 @@ display( void )
     glVertexAttribPointer( vPosition, 4, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(CYLINDER_OFFSET) );
     glVertexAttribPointer( vNormal, 3, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(CYLINDER_NORMALS_OFFSET) );
     glDrawArrays( GL_TRIANGLES, 0, NumVerticesCylinder );
+    
+    
+    //platform object
+    
+    vec4 ka = vec4(0.7, 0.0, 1.0, 1.0);
+    vec4 kd = vec4(0.7, 0.0, 1.0, 1.0);
+    vec4 ks = vec4(0.7, 0.0, 1.0, 1.0);
+    float s = 1.0;
+    
+    SetMaterial(ka, kd, ks, s);
+    glUniform1i( glGetUniformLocation(program, "light_out"), false );
+    
+    
+    glUniform4fv( glGetUniformLocation(program, "ka"), 1, ka );
+    glUniform4fv( glGetUniformLocation(program, "kd"), 1, kd );
+    glUniform4fv( glGetUniformLocation(program, "ks"), 1, ks );
+    glUniform1f( glGetUniformLocation(program, "Shininess"), s );
+    
+    mat4 transform = Translate( 0.0, 1.0, -5.0 ) * Scale(2.0, 2.0, 2.0);
+    
+    glUniformMatrix4fv( glGetUniformLocation( program, "model" ), 1, GL_TRUE, transform );
+    
+    glVertexAttribPointer( vPosition, 4, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(CUBE_OFFSET) );
+    glVertexAttribPointer( vNormal, 3, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(CUBE_NORMALS_OFFSET) );
+    
+    glUniform1i( glGetUniformLocation(program, "obj_color_on"), false );
+    
+    glDrawArrays( GL_TRIANGLES, 0, NumVerticesCube );
+    
+    
     
     
     glutSwapBuffers();

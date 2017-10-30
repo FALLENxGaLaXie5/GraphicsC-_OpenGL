@@ -359,3 +359,227 @@ colorbube(void)
 
 
 
+
+
+
+
+
+
+
+
+//torus model
+//----------------------------------------------
+
+vec4 points_torus[NumVerticesTorus];
+vec4 vertices_torus[4];
+vec3 normals_torus[NumVerticesTorus];
+
+
+
+
+void
+quad_torus( int a, int b, int c, int d )
+{
+    points_torus[Index] = vertices_torus[a];
+    normals_torus[Index] = vec3(vertices_torus[a].x, vertices_torus[a].y, vertices_torus[a].z);
+    Index++;
+    points_torus[Index] = vertices_torus[b];
+    normals_torus[Index] = vec3(vertices_torus[a].x, vertices_torus[a].y, vertices_torus[a].z);
+    Index++;
+    points_torus[Index] = vertices_torus[c];
+    normals_torus[Index] = vec3(vertices_torus[a].x, vertices_torus[a].y, vertices_torus[a].z);
+    Index++;
+    points_torus[Index] = vertices_torus[a];
+    normals_torus[Index] = vec3(vertices_torus[a].x, vertices_torus[a].y, vertices_torus[a].z);
+    Index++;
+    points_torus[Index] = vertices_torus[c];
+    normals_torus[Index] = vec3(vertices_torus[a].x, vertices_torus[a].y, vertices_torus[a].z);
+    Index++;
+    points_torus[Index] = vertices_torus[d];
+    normals_torus[Index] = vec3(vertices_torus[a].x, vertices_torus[a].y, vertices_torus[a].z);
+    Index++;
+}
+
+
+
+
+void
+colorTorus(void)
+{
+    float r = 0.25;
+    float rd = 0.5;
+    Index = 0;
+    float x,y;
+    for (int p = 0; p < torusLevels; p++)
+    {
+        
+        
+        
+        GLfloat const p0 = 2 * M_PI * (float)p / (float)torusLevels;
+        GLfloat const p1 = 2 * M_PI * (float)(p+1) / (float)torusLevels;
+        
+        int num;
+        for ( int n = 0; n < torusLevels; n++ )
+        {
+            
+            num = 0;
+            
+            GLfloat const t0 = 2 * M_PI * (float)n / (float)torusLevels;
+            GLfloat const t1 = 2 * M_PI * (float)(n+1) / (float)torusLevels;
+            
+            
+            //quad vertex 0
+            
+            x = cos(t0) * r + rd;
+            y = 0.0;
+            vertices_torus[num].z = sin(t0) * r;
+            // rotated by p1
+            vertices_torus[num].x = x*cos(p1) - y*sin(p1);
+            vertices_torus[num].y = x*sin(p1) + y*cos(p1);
+            vertices_torus[num++].w = 1.0;
+            
+            
+            //quad vertex 1
+            
+            x = cos(t1) * r + rd;
+            y = 0.0;
+            vertices_torus[num].z = r * sin(t1);
+            // rotated by p1
+            vertices_torus[num].x = x*cos(p1) - y*sin(p1);
+            vertices_torus[num].y = x*sin(p1) + y*cos(p1);
+            vertices_torus[num++].w = 1.0;
+            
+
+            
+            
+            //quad vertex 2
+            
+            
+            x = cos(t1) * r + rd;
+            y = 0.0;
+            vertices_torus[num].z = sin(t1) * r;
+            // rotated by p0
+            vertices_torus[num].x = x*cos(p0) - y*sin(p0);
+            vertices_torus[num].y = x*sin(p0) + y*cos(p0);
+            
+            vertices_torus[num++].w = 1.0;
+            
+
+            
+            //quad vertex 3
+            
+            x = cos(t0) * r + rd;
+            y = 0.0;
+            vertices_torus[num].z = sin(t0) * r;
+            // rotated by p0
+            vertices_torus[num].x = x*cos(p0) - y*sin(p0);
+            vertices_torus[num].y = x*sin(p0) + y*cos(p0);
+            
+            vertices_torus[num++].w = 1.0;
+            
+            //normals_torus[Index] = vec3(points_torus[Index].x, points_torus[Index].y, points_torus[Index].z);
+
+            
+            
+            
+            quad_torus( 0, 1, 2, 3 );
+        }
+    }
+}
+
+
+
+/**
+ //---- torus model
+ //----------------------------------------------------------------------------
+ vec4 points_torus[NumVerticesTorus];
+ vec4 vertices_torus[4];
+ // quad generates two triangles for each face and assigns colors to the vertices
+ void
+ quad_torus( int a, int b, int c, int d )
+ {
+ points_torus[Index] = vertices_torus[a];
+ Index++;
+ points_torus[Index] = vertices_torus[b];
+ Index++;
+ points_torus[Index] = vertices_torus[c];
+ Index++;
+ points_torus[Index] = vertices_torus[a];
+ Index++;
+ points_torus[Index] = vertices_torus[c];
+ Index++;
+ points_torus[Index] = vertices_torus[d];
+ Index++;
+ }
+ */
+/*
+ void
+ colortorus(void)
+ {
+ float r = 0.25;
+ float rd = 0.5;
+ Index = 0;
+ float x,y;
+ 
+ for( int m = 0; m < torusLevels; m++ )
+ {
+ GLfloat const p0 = 2 * M_PI * (float)m / (float)torusLevels;
+ GLfloat const p1 = 2 * M_PI * (float)(m+1) / (float)torusLevels;
+ 
+ int num;
+ for ( int n = 0; n < torusLevels; n++ )
+ {
+ num = 0;
+ //sfloat x = 0.0, y = 0.0;
+ 
+ GLfloat const t0 = 2 * M_PI * (float)n / (float)torusLevels;
+ GLfloat const t1 = 2 * M_PI * (float)(n+1) / (float)torusLevels;
+ 
+ //quad vertex 0
+ x = cos(t0) * r + rd;
+ y = 0.0;
+ vertices_torus[num].z = sin(t0) * r;
+ // rotated by p1
+ vertices_torus[num].x = x*cos(p1) - y*sin(p1);
+ vertices_torus[num].y = x*sin(p1) + y*cos(p1);
+ vertices_torus[num++].w = 1.0;
+ 
+ //quad vertex 1
+ x = cos(t1) * r + rd;
+ y = 0.0;
+ vertices_torus[num].z = sin(t1) * r;
+ // rotated by p1
+ vertices_torus[num].x = x*cos(p1) - y*sin(p1);
+ vertices_torus[num].y = x*sin(p1) + y*cos(p1);
+ vertices_torus[num++].w = 1.0;
+ 
+ //quad vertex 2
+ x = cos(t1) * r + rd;
+ y = 0.0;
+ vertices_torus[num].z = sin(t1) * r;
+ // rotated by p0
+ vertices_torus[num].x = x*cos(p0) - y*sin(p0);
+ vertices_torus[num].y = x*sin(p0) + y*cos(p0);
+ 
+ vertices_torus[num++].w = 1.0;
+ 
+ //quad vertex 3
+ x = cos(t0) * r + rd;
+ y = 0.0;
+ vertices_torus[num].z = sin(t0) * r;
+ // rotated by p0
+ vertices_torus[num].x = x*cos(p0) - y*sin(p0);
+ vertices_torus[num].y = x*sin(p0) + y*cos(p0);
+ 
+ vertices_torus[num++].w = 1.0;
+ 
+ quad_torus( 0, 1, 2, 3 );
+ }
+ }
+ 
+ 
+ }
+ */
+
+
+

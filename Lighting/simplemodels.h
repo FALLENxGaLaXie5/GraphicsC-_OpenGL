@@ -32,6 +32,15 @@ extern vec3 normals_sphere[NumVerticesSphere];
 void colorbube();
 
 
+//----------------------------------------------------------------------------
+const int torusLevels = 32;
+const int NumVerticesTorus = torusLevels * 6 * torusLevels;
+
+extern vec4 points_torus[NumVerticesTorus];
+extern vec3 normals_torus[NumVerticesTorus];
+
+void colorTorus();
+
 
 
 

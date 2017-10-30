@@ -56,6 +56,9 @@ size_t LIGHT1_NORMAL;
 size_t LIGHT2_OFFSET;
 size_t LIGHT2_NORMAL;
 
+float satRotAngle = 0.0;
+float satRevAngle = 0.0;
+
 
 GLuint program;
 GLuint vPosition;
@@ -74,6 +77,7 @@ init()
     colorcube();
     colortube();
     colorbube();
+    colorTorus();
     
     //---------------------------------------------------------------------
     
@@ -175,6 +179,7 @@ mat4 view_matrix;
 
 float r = 2.9;
 
+float heightLight = 5.5;
 
 float poleRadius = 0.3;
 
@@ -186,12 +191,12 @@ display( void )
     
     //---- lights
     
-    vec4 lpos = vec4( -15.0, 4.5, 0.0, 1.0 );
+    vec4 lpos = vec4( -15.0, heightLight, 0.0, 1.0 );
     glUniform4fv( glGetUniformLocation(program, "LightPosition"), 1, lpos);
     
     vec4 la(0.2, 0.2, 0.2, 1.0);
-    vec4 ld(0.7, 0.7, 0.7, 1.0);
-    vec4 ls(0.4, 0.4, 0.4, 1.0);
+    vec4 ld(1.0, 0.6, 0.6, 1.0);
+    vec4 ls(0.95, 0.4, 0.4, 1.0);
     glUniform4fv( glGetUniformLocation(program, "AmbientLight"), 1, la);
     glUniform4fv( glGetUniformLocation(program, "DiffuseLight"), 1, ld);
     glUniform4fv( glGetUniformLocation(program, "SpecularLight"), 1, ls);
@@ -236,6 +241,9 @@ display( void )
     //kd = vec4(0.3, 0.3, 1.0, 1.0);
     //ks = vec4(0.2, 0.2, 0.2, 1.0);
     
+    lpos = vec4( -15.0, heightLight, 0.0, 1.0 );
+    glUniform4fv( glGetUniformLocation(program, "LightPosition"), 1, lpos);
+    
     ka = vec4(0.7, 0.0, 1.0, 1.0);
     kd = vec4(0.7, 0.0, 1.0, 1.0);
     ks = vec4(0.7, 0.0, 1.0, 1.0);
@@ -246,7 +254,82 @@ display( void )
     glUniform4fv( glGetUniformLocation(program, "ks"), 1, ks );
     glUniform1f( glGetUniformLocation(program, "Shininess"), s );
     
+    glUniform1i(glGetUniformLocation(program, "reverse"), false);
+
+    
     mat4 transform = Translate( -15.0, 1.0, -5.0 ) * Scale(2.0, 2.0, 2.0);
+    
+    glUniformMatrix4fv( glGetUniformLocation( program, "model" ), 1, GL_TRUE, transform );
+    
+    glVertexAttribPointer( vPosition, 4, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(CUBE_OFFSET) );
+    glVertexAttribPointer( vNormal, 3, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(CUBE_NORMALS_OFFSET) );
+    
+    glUniform1i( glGetUniformLocation(program, "obj_color_on"), false );
+    
+    glDrawArrays( GL_TRIANGLES, 0, NumVerticesCube );
+    
+    
+    
+    
+    //---- cubeTop1
+    
+    // material properties
+    //ka = vec4(0.4, 0.4, 0.4, 1.0);
+    //kd = vec4(0.3, 0.3, 1.0, 1.0);
+    //ks = vec4(0.2, 0.2, 0.2, 1.0);
+    
+    lpos = vec4( -15.0, heightLight, 0.0, 1.0 );
+    glUniform4fv( glGetUniformLocation(program, "LightPosition"), 1, lpos);
+    
+    ka = vec4(0.7, 0.0, 1.0, 1.0);
+    kd = vec4(0.7, 0.0, 1.0, 1.0);
+    ks = vec4(0.7, 0.0, 1.0, 1.0);
+    s = 5.0;
+    
+    glUniform4fv( glGetUniformLocation(program, "ka"), 1, ka );
+    glUniform4fv( glGetUniformLocation(program, "kd"), 1, kd );
+    glUniform4fv( glGetUniformLocation(program, "ks"), 1, ks );
+    glUniform1f( glGetUniformLocation(program, "Shininess"), s );
+    
+    glUniform1i(glGetUniformLocation(program, "reverse"), false);
+    
+    
+    transform = Translate( -15.0, heightLight + 0.7, 0.0 ) * Scale(3.0, 0.3, 3.0);
+    
+    glUniformMatrix4fv( glGetUniformLocation( program, "model" ), 1, GL_TRUE, transform );
+    
+    glVertexAttribPointer( vPosition, 4, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(CUBE_OFFSET) );
+    glVertexAttribPointer( vNormal, 3, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(CUBE_NORMALS_OFFSET) );
+    
+    glUniform1i( glGetUniformLocation(program, "obj_color_on"), false );
+    
+    glDrawArrays( GL_TRIANGLES, 0, NumVerticesCube );
+    
+    
+    //---- cubeTop2
+    
+    // material properties
+    //ka = vec4(0.4, 0.4, 0.4, 1.0);
+    //kd = vec4(0.3, 0.3, 1.0, 1.0);
+    //ks = vec4(0.2, 0.2, 0.2, 1.0);
+    
+    lpos = vec4( 15.0, heightLight, 0.0, 1.0 );
+    glUniform4fv( glGetUniformLocation(program, "LightPosition"), 1, lpos);
+    
+    ka = vec4(0.7, 0.0, 1.0, 1.0);
+    kd = vec4(0.7, 0.0, 1.0, 1.0);
+    ks = vec4(0.7, 0.0, 1.0, 1.0);
+    s = 5.0;
+    
+    glUniform4fv( glGetUniformLocation(program, "ka"), 1, ka );
+    glUniform4fv( glGetUniformLocation(program, "kd"), 1, kd );
+    glUniform4fv( glGetUniformLocation(program, "ks"), 1, ks );
+    glUniform1f( glGetUniformLocation(program, "Shininess"), s );
+    
+    glUniform1i(glGetUniformLocation(program, "reverse"), false);
+    
+    
+    transform = Translate( 15.0, heightLight + 0.7, 0.0 ) * Scale(3.0, 0.3, 3.0);
     
     glUniformMatrix4fv( glGetUniformLocation( program, "model" ), 1, GL_TRUE, transform );
     
@@ -268,6 +351,9 @@ display( void )
     //kd = vec4(0.3, 0.3, 1.0, 1.0);
     //ks = vec4(0.2, 0.2, 0.2, 1.0);
     
+    lpos = vec4( -15.0, heightLight, 0.0, 1.0 );
+    glUniform4fv( glGetUniformLocation(program, "LightPosition"), 1, lpos);
+    
     ka = vec4(0.9, 0.5, 0.1, 1.0);
     kd = vec4(0.9, 0.5, 0.1, 1.0);
     ks = vec4(0.9, 0.5, 0.1, 1.0);
@@ -277,6 +363,9 @@ display( void )
     glUniform4fv( glGetUniformLocation(program, "kd"), 1, kd );
     glUniform4fv( glGetUniformLocation(program, "ks"), 1, ks );
     glUniform1f( glGetUniformLocation(program, "Shininess"), s );
+    
+    glUniform1i(glGetUniformLocation(program, "reverse"), false);
+
     
     transform = Translate( 0.0, 0.0, 0.0 ) * Scale(20.0, 1.0, 40.0);
     
@@ -300,6 +389,10 @@ display( void )
     //kd = vec4(0.3, 0.3, 1.0, 1.0);
     //ks = vec4(0.2, 0.2, 0.2, 1.0);
     
+    
+    lpos = vec4( -15.0, heightLight, 0.0, 1.0 );
+    glUniform4fv( glGetUniformLocation(program, "LightPosition"), 1, lpos);
+    
     ka = vec4(0.1, 0.9, 0.1, 1.0);
     kd = vec4(0.1, 0.9, 0.1, 1.0);
     ks = vec4(0.1, 0.9, 0.1, 1.0);
@@ -309,6 +402,8 @@ display( void )
     glUniform4fv( glGetUniformLocation(program, "kd"), 1, kd );
     glUniform4fv( glGetUniformLocation(program, "ks"), 1, ks );
     glUniform1f( glGetUniformLocation(program, "Shininess"), s );
+    
+    glUniform1i(glGetUniformLocation(program, "reverse"), false);
     
     transform = Translate( -20.0, 0.0, 0.0 ) * Scale(20.0, 1.0, 40.0);
     
@@ -334,7 +429,7 @@ display( void )
     //ks = vec4(0.2, 0.2, 0.2, 1.0);
     
     
-    lpos = vec4( 15.0, 2.0, 0.0, 1.0 );
+    lpos = vec4( 15.0, heightLight, 0.0, 1.0 );
     glUniform4fv( glGetUniformLocation(program, "LightPosition"), 1, lpos);
     
     
@@ -347,6 +442,9 @@ display( void )
     glUniform4fv( glGetUniformLocation(program, "kd"), 1, kd );
     glUniform4fv( glGetUniformLocation(program, "ks"), 1, ks );
     glUniform1f( glGetUniformLocation(program, "Shininess"), s );
+    
+    glUniform1i(glGetUniformLocation(program, "reverse"), false);
+
     
     transform = Translate( 20.0, 0.0, 0.0 ) * Scale(20.0, 1.0, 40.0);
     
@@ -364,10 +462,13 @@ display( void )
     //---- cube1
     
     // material properties
-    ka, kd, ks;
     //ka = vec4(0.4, 0.4, 0.4, 1.0);
     //kd = vec4(0.3, 0.3, 1.0, 1.0);
     //ks = vec4(0.2, 0.2, 0.2, 1.0);
+    
+    
+    lpos = vec4( 15.0, heightLight, 0.0, 1.0 );
+    glUniform4fv( glGetUniformLocation(program, "LightPosition"), 1, lpos);
     
     ka = vec4(0.7, 0.0, 1.0, 1.0);
     kd = vec4(0.7, 0.0, 1.0, 1.0);
@@ -378,6 +479,9 @@ display( void )
     glUniform4fv( glGetUniformLocation(program, "kd"), 1, kd );
     glUniform4fv( glGetUniformLocation(program, "ks"), 1, ks );
     glUniform1f( glGetUniformLocation(program, "Shininess"), s );
+    
+    glUniform1i(glGetUniformLocation(program, "reverse"), false);
+
     
     transform = Translate( 15.0, 1.0, -5.0 ) * Scale(2.0, 2.0, 2.0);
     
@@ -410,13 +514,16 @@ display( void )
     ks = vec4(0.2, 0.0, 0.0, 1.0);
     s = 5.0;
     
-    lpos = vec4( -15.0, 3.3, 2.0, 1.0 );
+    lpos = vec4( -15.0, heightLight, 2.0, 1.0 );
     glUniform4fv( glGetUniformLocation(program, "LightPosition"), 1, lpos);
     
     glUniform4fv( glGetUniformLocation(program, "ka"), 1, ka );
     glUniform4fv( glGetUniformLocation(program, "kd"), 1, kd );
     glUniform4fv( glGetUniformLocation(program, "ks"), 1, ks );
     glUniform1f( glGetUniformLocation(program, "Shininess"), s );
+    
+    glUniform1i(glGetUniformLocation(program, "reverse"), false);
+
     
     transform = Translate( -15.0, 3.0, 0.0 ) * Scale(poleRadius, 5.0, poleRadius);
     
@@ -435,7 +542,7 @@ display( void )
 
     
     
-    lpos = vec4( -15.0, 3.0, 0.0, 1.0 );
+    lpos = vec4( -15.0, heightLight, 0.0, 1.0 );
     glUniform4fv( glGetUniformLocation(program, "LightPosition"), 1, lpos);
     
     // material properties
@@ -448,6 +555,9 @@ display( void )
     glUniform4fv( glGetUniformLocation(program, "kd"), 1, kd );
     glUniform4fv( glGetUniformLocation(program, "ks"), 1, ks );
     glUniform1f( glGetUniformLocation(program, "Shininess"), s );
+    
+    
+    glUniform1i(glGetUniformLocation(program, "reverse"), false);
 
     transform = Translate( -15.0, 4.3, 0.0 ) * Scale(poleRadius, poleRadius, poleRadius);
     
@@ -467,7 +577,7 @@ display( void )
     
     //---- light base 1
     
-    lpos = vec4( -15.0, 1.5, 0.0, 1.0 );
+    lpos = vec4( -15.0, heightLight, 0.0, 1.0 );
     glUniform4fv( glGetUniformLocation(program, "LightPosition"), 1, lpos);
     
     
@@ -486,6 +596,9 @@ display( void )
     glUniform4fv( glGetUniformLocation(program, "kd"), 1, kd );
     glUniform4fv( glGetUniformLocation(program, "ks"), 1, ks );
     glUniform1f( glGetUniformLocation(program, "Shininess"), s );
+    
+    glUniform1i(glGetUniformLocation(program, "reverse"), false);
+
     
     transform = Translate( -15.0, 0.5, 0.0 ) * Scale(3.0, 1.5, 3.0);
     
@@ -511,6 +624,10 @@ display( void )
     //kd = vec4(0.3, 0.3, 1.0, 1.0);
     //ks = vec4(0.2, 0.2, 0.2, 1.0);
     
+    
+    lpos = vec4( -15.0, heightLight, 0.0, 1.0 );
+    glUniform4fv( glGetUniformLocation(program, "LightPosition"), 1, lpos);
+    
     ka = vec4(0.2, 0.0, 0.0, 1.0);
     kd = vec4(0.2, 0.0, 0.0, 1.0);
     ks = vec4(0.2, 0.0, 0.0, 1.0);
@@ -520,6 +637,9 @@ display( void )
     glUniform4fv( glGetUniformLocation(program, "kd"), 1, kd );
     glUniform4fv( glGetUniformLocation(program, "ks"), 1, ks );
     glUniform1f( glGetUniformLocation(program, "Shininess"), s );
+    
+    glUniform1i(glGetUniformLocation(program, "reverse"), false);
+
     
     transform = Translate( 15.0, 3.0, 0.0 ) * Scale(poleRadius, 5.0, poleRadius);
     
@@ -541,7 +661,8 @@ display( void )
     
     
     
-    
+    lpos = vec4( -15.0, heightLight, 0.0, 1.0 );
+    glUniform4fv( glGetUniformLocation(program, "LightPosition"), 1, lpos);
     
     // material properties
     ka = vec4(1.0, 1.0, 1.0, 1.0);
@@ -553,6 +674,9 @@ display( void )
     glUniform4fv( glGetUniformLocation(program, "kd"), 1, kd );
     glUniform4fv( glGetUniformLocation(program, "ks"), 1, ks );
     glUniform1f( glGetUniformLocation(program, "Shininess"), s );
+    
+    glUniform1i(glGetUniformLocation(program, "reverse"), false);
+
     
     transform = Translate( 15.0, 4.3, 0.0 ) * Scale(poleRadius, poleRadius, poleRadius);
     
@@ -573,7 +697,7 @@ display( void )
     //---- light base 2
     
     
-    lpos = vec4( 15.0, 1.5, 0.0, 1.0 );
+    lpos = vec4( 15.0, heightLight, 0.0, 1.0 );
     glUniform4fv( glGetUniformLocation(program, "LightPosition"), 1, lpos);
     
     // material properties
@@ -592,6 +716,9 @@ display( void )
     glUniform4fv( glGetUniformLocation(program, "ks"), 1, ks );
     glUniform1f( glGetUniformLocation(program, "Shininess"), s );
     
+    glUniform1i(glGetUniformLocation(program, "reverse"), false);
+
+    
     transform = Translate( 15.0, 0.5, 0.0 ) * Scale(3.0, 1.5, 3.0);
     
     glUniformMatrix4fv( glGetUniformLocation( program, "model" ), 1, GL_TRUE, transform );
@@ -608,9 +735,8 @@ display( void )
     //---- light 1
     
     
-    lpos = vec4( -15.0, 3.0, 0.0, 1.0 );
+    lpos = vec4( -15.0, heightLight, 0.0, 1.0 );
     
-    glUniform1i(glGetUniformLocation(program, "reverse"), true);
     glUniform4fv( glGetUniformLocation(program, "LightPosition"), 1, lpos);
     
     
@@ -624,6 +750,9 @@ display( void )
     glUniform4fv( glGetUniformLocation(program, "kd"), 1, kd );
     glUniform4fv( glGetUniformLocation(program, "ks"), 1, ks );
     glUniform1f( glGetUniformLocation(program, "Shininess"), s );
+    
+    glUniform1i(glGetUniformLocation(program, "reverse"), true);
+
     
     transform = Translate( -15.0, 5.5, 0.0 ) * Scale(1.5, 1.5, 1.5);
     
@@ -643,7 +772,7 @@ display( void )
     
     
     
-    lpos = vec4( 15.0, 3.0, 0.0, 1.0 );
+    lpos = vec4( 15.0, heightLight, 0.0, 1.0 );
     glUniform4fv( glGetUniformLocation(program, "LightPosition"), 1, lpos);
     
     // material properties
@@ -657,12 +786,31 @@ display( void )
     glUniform4fv( glGetUniformLocation(program, "ks"), 1, ks );
     glUniform1f( glGetUniformLocation(program, "Shininess"), s );
     
+    
+    glUniform1i(glGetUniformLocation(program, "reverse"), true);
+
+    
     transform = Translate( 15.0, 5.5, 0.0 ) * Scale(1.5, 1.5, 1.5);
     
     glUniformMatrix4fv( glGetUniformLocation( program, "model" ), 1, GL_TRUE, transform );
     
     glVertexAttribPointer( vPosition, 4, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(LIGHT2_OFFSET) );
     glVertexAttribPointer( vNormal, 3, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(LIGHT2_NORMAL) );
+    
+    glUniform1i( glGetUniformLocation(program, "obj_color_on"), false );
+    
+    glDrawArrays( GL_TRIANGLES, 0, NumVerticesSphere );
+    
+    
+    
+    
+    //rotating planet
+    
+    transform = RotateY(satRevAngle) * Translate(0.9, 0.0, 0.0) * RotateY(satRotAngle) * Scale(0.1, 0.1, 0.1);
+    
+    glUniformMatrix4fv( glGetUniformLocation( program, "model" ), 1, GL_TRUE, transform );
+    
+    glVertexAttribPointer( vPosition, 4, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(LIGHT1_OFFSET) );
     
     glUniform1i( glGetUniformLocation(program, "obj_color_on"), false );
     
@@ -757,6 +905,9 @@ idle( void )
     Theta1[Axis] = fmod(Theta1[Axis]+1, 360.0);
     Theta2[Axis] = fmod(Theta2[Axis]+2, 360.0);
     
+    
+     satRotAngle = fmod(satRotAngle + 0.5, 360.0);
+     satRevAngle = fmod(satRevAngle + 0.5, 360.0);
     glutPostRedisplay();
 }
 

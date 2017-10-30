@@ -14,7 +14,7 @@ uniform vec4 AmbientLight, DiffuseLight, SpecularLight;
 uniform vec4 ka, kd, ks;
 uniform float Shininess;
 
-uniform bool reverse = false;
+uniform bool reverse;
 
 
 void main()
@@ -23,19 +23,14 @@ void main()
     
     
     vec3 N = normalize(fN);
+    if (reverse)
+    {
+        N = -N;
+    }
     vec3 E = normalize(fE);
     vec3 L = normalize(fL);
     
     vec3 H = normalize( L + E );
-    
-    if (reverse)
-    {
-        N = -normalize(fN);
-        E = -normalize(fE);
-        L = -normalize(fL);
-        
-        H = -normalize( L + E );
-    }
     
     
     // Compute terms in the illumination equation

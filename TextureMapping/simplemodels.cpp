@@ -9,7 +9,7 @@
 vec4 points_cube[NumVerticesCube];
 vec4 colors[NumVerticesCube];
 vec3 normals_cube[NumVerticesCube];
-
+vec2 tex_coords_cube[NumVerticesCube];
 // Vertices of a unit cube centered at origin, sides aligned with axes
 vec4 vertices[8] = {
     vec4( -0.5, -0.5,  0.5, 1.0 ),
@@ -50,12 +50,37 @@ quad( int a, int b, int c, int d )
     
     vec3 normal = normalize( cross(u, v) );
     
-    normals_cube[Index] = normal; colors[Index] = vertex_colors[a]; points_cube[Index] = vertices[a]; Index++;
-    normals_cube[Index] = normal; colors[Index] = vertex_colors[a]; points_cube[Index] = vertices[b]; Index++;
-    normals_cube[Index] = normal; colors[Index] = vertex_colors[a]; points_cube[Index] = vertices[c]; Index++;
-    normals_cube[Index] = normal; colors[Index] = vertex_colors[a]; points_cube[Index] = vertices[a]; Index++;
-    normals_cube[Index] = normal; colors[Index] = vertex_colors[a]; points_cube[Index] = vertices[c]; Index++;
-    normals_cube[Index] = normal; colors[Index] = vertex_colors[a]; points_cube[Index] = vertices[d]; Index++;
+    normals_cube[Index] = normal; colors[Index] = vertex_colors[a]; points_cube[Index] = vertices[a];
+    tex_coords_cube[Index] = vec2(1.0, 1.0);
+    Index++;
+    
+    normals_cube[Index] = normal; colors[Index] = vertex_colors[a]; points_cube[Index] = vertices[b];
+    tex_coords_cube[Index] = vec2(1.0, 0.0);
+
+    
+    Index++;
+    
+    
+    normals_cube[Index] = normal; colors[Index] = vertex_colors[a]; points_cube[Index] = vertices[c];
+    tex_coords_cube[Index] = vec2(0.0, 0.0);
+
+    
+    Index++;
+    normals_cube[Index] = normal; colors[Index] = vertex_colors[a]; points_cube[Index] = vertices[a];
+    tex_coords_cube[Index] = vec2(1.0, 1.0);
+
+    
+    Index++;
+    normals_cube[Index] = normal; colors[Index] = vertex_colors[a]; points_cube[Index] = vertices[c];
+    tex_coords_cube[Index] = vec2(0.0, 0.0);
+
+    
+    Index++;
+    normals_cube[Index] = normal; colors[Index] = vertex_colors[a]; points_cube[Index] = vertices[d];
+    tex_coords_cube[Index] = vec2(0.0, 1.0);
+
+    
+    Index++;
 }
 
 //----------------------------------------------------------------------------

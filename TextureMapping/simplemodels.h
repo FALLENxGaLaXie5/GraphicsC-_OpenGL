@@ -6,6 +6,8 @@ const int NumVerticesCube = 36; //(6 faces)(2 triangles/face)(3 vertices/triangl
 extern vec4 points_cube[NumVerticesCube];
 extern vec4 colors[NumVerticesCube];
 extern vec3 normals_cube[NumVerticesCube];
+extern vec2 tex_coords_cube[NumVerticesCube];
+
 
 void colorcube();
 
